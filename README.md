@@ -24,12 +24,9 @@ The program runs several tests to test the input and if an output can be provide
     7. Exon_number: check that we get the right number of exons
   
   b) modules
-    1. Access the LRG-sequence.org calling th
-    2. Introduce the gene into 
-    2. Input name of gene 
-    3. Extraction of LRG_identifier (if any)
-    4. 
-    5.
-    3.
+    1. Access the LRG-sequence.org with an specific Gene name 
+    3. Extraction of LRG_identifier (if any), Gene, Chromosome number, strand, exons numbers
+    4. Define the genomic coordinates for each exons regarding GRCh37 and GRCh38
+    5. Compare coordinates
   
   
