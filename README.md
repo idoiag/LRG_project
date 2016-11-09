@@ -1,8 +1,15 @@
 # LRG_project
 Contains documentation about the LRG_project
 
-Aim: LRG_ext extracts information about the introns and exons from a specified LRG identifier.
-It also provides information about the GRCh37 and 38.
+Aim: LRG_ext extracts information from the LRG record of a gene. This includes: 
+
+- LRG ID
+- Gene
+- Chromosome number 
+- strand
+- Exons number 
+- Exon number +  coordinates + genomic coordinates reg. GRCh37 and GRCh38)
+- Compare coordinates between builds
 
 Structure:
 The program runs several tests to test the input and if an output can be provided
@@ -17,10 +24,12 @@ The program runs several tests to test the input and if an output can be provide
     7. Exon_number: check that we get the right number of exons
   
   b) modules
-    1. Input name of gene 
-    2. Extraction of LRG_identifier (if any)
-    3. 
-    2.
+    1. Access the LRG-sequence.org calling th
+    2. Introduce the gene into 
+    2. Input name of gene 
+    3. Extraction of LRG_identifier (if any)
+    4. 
+    5.
     3.
   
   
