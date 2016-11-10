@@ -11,9 +11,15 @@
 
 import xml.etree.ElementTree as ET
 
+# ask user to input LRG name
+# filename = input("Enter LRG name: ")
+
+# check file is in xml format. If not, return error message "Not an xml file"
+
 # add try, except to close program if no LRG exists
 
 tree = ET.parse('LRG_1.xml')
+# change to  tree = ET.parse(filename + '.xml') once program is ready
 root = tree.getroot()
 fix_anno = tree.getroot()[0]
 up_anno = tree.getroot()[1]
@@ -57,3 +63,4 @@ for exon in fix_anno.iter('exon'):
     print (exon.attrib)
 
 # ouput all to .csv file or BED file
+# tree.write('output.txt')

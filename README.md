@@ -28,5 +28,10 @@ The program runs several tests to test the input and if an output can be provide
     3. Extraction of LRG_identifier (if any), Gene, Chromosome number, strand, exons numbers
     4. Define the genomic coordinates for each exons regarding GRCh37 and GRCh38
     5. Compare coordinates
-  
+
+N.B. LRG.xml files included for testing purposes include:
+LRG_1 (Gene COL1A1)
+LRG_9 (Gene SDHD) Pending approval, not public yet
+LRG_214 (Gene NF1) Two transcripts
+LRG_292 (Gene BRCA1) Reverse strand
   
