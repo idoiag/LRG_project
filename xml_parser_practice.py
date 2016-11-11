@@ -1,14 +1,18 @@
 import xml.etree.ElementTree as ET
-lrg = ET.parse('LRG_292.xml')
+lrg_xml = ET.parse('LRG_292.xml')
 #root = tree.getroot()
 
-lrg_id = lrg.find('fixed_annotation/id').text
+lrg_id = lrg_xml.find('fixed_annotation/id').text
 print('LRG id: ', lrg_id)
 
-gene = lrg.find('updatable_annotation/annotation_set/lrg_locus').text
-print('Gene: ', gene)
+def get_gene_name(filename):
+    gene = lrg_xml.find('updatable_annotation/annotation_set/lrg_locus').text
+    print('Gene: ', gene)
+    return gene
 
-exon_lst = lrg.findall('fixed_annotation/transcript/exon')
+get_gene_name('LRG_292.xml')
+
+exon_lst = lrg_xml.findall('fixed_annotation/transcript/exon')
 print('Exon count: ', len(exon_lst))
 for exons in exon_lst:
     #print('Exon number: ', exons.get("label"))
@@ -25,6 +29,7 @@ for exons in exon_lst:
     print(exon_number, coord_start, coord_end, strand)
 
 
+#    output.write(exon_number,'\t',coord_start,'\t',coord_end,'\t',strand,'\n')
 
 #import urllib.request, urllib.error
 #import xmltodict
