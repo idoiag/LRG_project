@@ -19,4 +19,4 @@ The program runs several tests to test the input and if an output can be provide
       3. Define the genomic coordinates for ezch exos regarding GRCh37 and GRCh38
       4. Compare coordnates
  
-      
+N.B. LRG.xml files included for testing purposes include: LRG_1 (Gene COL1A1) LRG_9 (Gene SDHD) Pending approval, not public yet LRG_214 (Gene NF1) Two transcripts LRG_292 (Gene BRCA1) Reverse strand
