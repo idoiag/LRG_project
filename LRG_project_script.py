@@ -1,16 +1,11 @@
 
 # this could be used to extract info from a webpage. Not necessary because labs will usually have the info saved
 
-#from urllib.request import urlopen
-
-#LRG = "LRG_1"
-#page = "http://ftp.ebi.ac.uk/pub/databases/lrgex/" + LRG + ".xml"
-
-#URL_xml = urlopen(page)
-#xml = URL_xml.read()
-#print (xml)
 
 import xml.etree.ElementTree as ET
+import os.path   ### NEW
+
+data = 'LRG_517.xml'
 
 # ask user to input LRG name
 # filename = input("Enter LRG name: ")
@@ -49,16 +44,15 @@ def get_background(root):
         print ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
         return ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
-def get_gene_name(filename):
+def get_up_anno(data):
     gene = tree.find('updatable_annotation/annotation_set/lrg_locus').text
     print('Gene: ', gene)
     return gene
 
-get_gene_name(data)
-
-
 def get_background(root):
-    
+    for lrg in root.findall ("."):  
+        schema = lrg.get('schema_version')  
+        
     for fixed in root.findall("./fixed_annotation"):
         lrg_id = fixed.find('id').text
         hgnc_id = fixed.find ('hgnc_id').text
@@ -72,9 +66,10 @@ def get_background(root):
                 start_cs = coordinates.get('start')
                 end_cs = coordinates.get('end')
                 strand_cs = coordinates.get('strand')
-
+        
+        print (schema) 
         print ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
-        return ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
+        return ( schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
 
 def get_build_info(up_anno):
@@ -87,7 +82,7 @@ def get_build_info(up_anno):
         print (coord, chro, NC_trans, gstart, gend)
         return (coord, chro, NC_trans, gstart, gend)
 
-
+"""
 def exon_lst(filename):
     exon_lst = lrg_xml.findall('fixed_annotation/transcript/exon')
     print('Exon count: ', len(exon_lst))
@@ -105,6 +100,7 @@ def exon_lst(filename):
                     strand = coordinates.get("strand")
         print(exon_number, coord_start, coord_end, strand)
 
+"""
 
 # if transcript number differ between builds 37 and 38:
 # print("Do transcripts match between builds? ", True/False)
@@ -112,10 +108,31 @@ def exon_lst(filename):
 # ouput all to .csv file or BED file
 # tree.write('output.txt')
 
+
+#### TESTING START ########
+def initial_tests():
+    if (os.path.isfile(data) == False) :
+        print ("Data is not a readable file")
+    
+    if (os.path.exists(data) == False):
+        print ("Data does not exits")
+    
+def second_tests():  
+    if schema != "1.9":  # Checking for xml format
+        print ("""lrgext supports LRG xmls built using schema 1.9. Please" 
+        be aware of data incongruencies""")
+    return
+
+##### END OF TESTING ########    
+    
 #### MAIN ####
-(root, up_anno) = get_structure('LRG_1.xml')
-(lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
+initial_tests()   
+(root, up_anno) = get_structure(data)  
+(schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
 (coord, chro, NC_trans, gstart, gend) = get_build_info(up_anno)
-filename = ('LRG_1.xml')
-(gene) = get_gene_name(filename)
-(exon_number, coord_start, coord_end, strand) = exon_lst(filename)
+(gene) = get_up_anno(data)
+second_tests()  
+
+#### Not working
+
+#(exon_number, coord_start, coord_end, strand) = exon_lst(filename)

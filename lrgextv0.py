@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import xml.etree.ElementTree as ET
-import os.path   
-
-data = 'LRG_517.xml'
 
 def get_structure(data):
     tree = ET.parse(data)
@@ -13,11 +10,8 @@ def get_structure(data):
     chro37 = tree.getroot()[1][1][2]
     chro38 = tree.getroot()[1][1][3]
     return(root, up_anno)
-    
 
 def get_background(root):
-    for lrg in root.findall ("."):  ###### NEW
-        schema = lrg.get('schema_version')  ##### NEW
     
     for fixed in root.findall("./fixed_annotation"):
         lrg_id = fixed.find('id').text
@@ -49,12 +43,9 @@ def get_background(root):
                     exonC_end = coor_exon.get('end')
                     
             ###### End of variables ########
-        
-        print (schema) ### NEW
-        
+                
         print ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
-        return ( schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
-        
+        return ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
 def get_build_info(up_anno):        
     for annotation in up_anno[1].findall('mapping'):
@@ -65,24 +56,10 @@ def get_build_info(up_anno):
         gend = annotation.get('other_end')
         print (coord, chro, NC_trans, gstart, gend, )
         return (coord, chro, NC_trans, gstart, gend)
-        
+        #return
 
-def initial_tests():
-    if (os.path.isfile(data) == False) :
-        print ("Data is not a readable file")
-    
-    if (os.path.exists(data) == False):
-        print ("Data does not exits")
-    
-def second_tests():  
-    if schema != "1.9":  # Checking for xml format
-        print ("""lrgext supports LRG xmls built using schema 1.9. Please" 
-        be aware of data incongruencies""")
-    return
         
 #### MAIN ####
-initial_tests()   
-(root, up_anno) = get_structure(data)  
-(schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
+(root, up_anno) = get_structure('LRG_1.xml')
+(lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
 (coord, chro, NC_trans, gstart, gend) = get_build_info(up_anno)
-second_tests()  
