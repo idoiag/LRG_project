@@ -1,3 +1,4 @@
+
 # this could be used to extract info from a webpage. Not necessary because labs will usually have the info saved
 
 #from urllib.request import urlopen
@@ -18,49 +19,103 @@ import xml.etree.ElementTree as ET
 
 # add try, except to close program if no LRG exists
 
-tree = ET.parse('LRG_1.xml')
 # change to  tree = ET.parse(filename + '.xml') once program is ready
-root = tree.getroot()
-fix_anno = tree.getroot()[0]
-up_anno = tree.getroot()[1]
 
-# Print LRG_id, NG, dna source etc.
-print ("LRG id = ", root[0][0].text)
-print ("Sequence source = ", root[0][2].text)
-print ("Organsim = ", root[0][3].text)
-print ("Source of data = ", root[0][4][0].text)
-print ("Mol_type = ", root[0][5].text)
-print ("LRG creation date = ", root[0][6].text)
+def get_structure(data):
+    tree = ET.parse(data)
+    root = tree.getroot()
+    fix_anno = tree.getroot()[0]
+    up_anno = tree.getroot()[1]
+    chro37 = tree.getroot()[1][1][2]
+    chro38 = tree.getroot()[1][1][3]
+    return(root, up_anno)
 
-#for annotation in up_anno.findall('annotation_set'):
-for annotation in up_anno[1].findall('mapping'):
-    #GHC = annotation.find('rank').text
-    #name = annotation.get('type')
-    coord = annotation.get('coord_system')
-    chro = annotation.get('other_name')
-    NC_trans = annotation.get('other_id')
-    gstart = annotation.get('other_start')
-    gend = annotation.get('other_end')
-    print ("Build",coord, chro, NC_trans, gstart, gend, )
+def get_background(root):
+    
+    for fixed in root.findall("fixed_annotation"):
+        lrg_id = fixed.find('id').text
+        hgnc_id = fixed.find ('hgnc_id').text
+        seq_source = fixed.find ('sequence_source').text
+
+        for transcript in root.findall("fixed_annotation/transcript"):
+            transcript = transcript.get('name')
+
+            for coordinates in root.findall("fixed_annotation/transcript/coordinates"):
+                cs = coordinates.get('coord_system')
+                start_cs = coordinates.get('start')
+                end_cs = coordinates.get('end')
+                strand_cs = coordinates.get('strand')
+
+        print ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
+        return ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
+
+def get_gene_name(filename):
+    gene = tree.find('updatable_annotation/annotation_set/lrg_locus').text
+    print('Gene: ', gene)
+    return gene
+
+get_gene_name(data)
+
+
+def get_background(root):
+    
+    for fixed in root.findall("./fixed_annotation"):
+        lrg_id = fixed.find('id').text
+        hgnc_id = fixed.find ('hgnc_id').text
+        seq_source = fixed.find ('sequence_source').text
+
+        for transcript in root.findall("./fixed_annotation/transcript"):
+            transcript = transcript.get('name')
+
+            for coordinates in root.findall("./fixed_annotation/transcript/coordinates"):
+                cs = coordinates.get('coord_system')
+                start_cs = coordinates.get('start')
+                end_cs = coordinates.get('end')
+                strand_cs = coordinates.get('strand')
+
+        print ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
+        return ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
+
+
+def get_build_info(up_anno):
+    for annotation in up_anno[1].findall('mapping'):
+        coord = annotation.get('coord_system')
+        chro = annotation.get('other_name')
+        NC_trans = annotation.get('other_id')
+        gstart = annotation.get('other_start')
+        gend = annotation.get('other_end')
+        print (coord, chro, NC_trans, gstart, gend)
+        return (coord, chro, NC_trans, gstart, gend)
+
+
+def exon_lst(filename):
+    exon_lst = lrg_xml.findall('fixed_annotation/transcript/exon')
+    print('Exon count: ', len(exon_lst))
+    for exons in exon_lst:
+        #print('Exon number: ', exons.get("label"))
+        exon_number = exons.get("label")
+        if int(exon_number) > 0:
+            for coordinates in exons:
+                if coordinates.get('coord_system') == lrg_id:
+                    #print('LRG start: ', coordinates.get("start"))
+                    coord_start = coordinates.get("start")
+                    #print('LRG end: ', coordinates.get("end"))
+                    coord_end = coordinates.get("end")
+                    #print('Strand: ', coordinates.get("strand"))
+                    strand = coordinates.get("strand")
+        print(exon_number, coord_start, coord_end, strand)
+
 
 # if transcript number differ between builds 37 and 38:
 # print("Do transcripts match between builds? ", True/False)
 
-# Find strand of LRG (forward 1, reverse -1)
-for annotation in up_anno[1].findall('mapping_span'):
-    #GHC = annotation.find('rank').text
-    #name = annotation.get('type')
-    strand = annotation.get('strand')
-    print ("Strand = ", strand)
-
-# Print gene name
-#? print(tree.findall[0]('symbol'))
-#? gene = gene_name.get('symbol')
-#? gene = tree.getroot()[1][3][16][0][0]
-#? print ("Gene = ", gene.attrib)
-
-for exon in fix_anno.iter('exon'):
-    print (exon.attrib)
-
 # ouput all to .csv file or BED file
 # tree.write('output.txt')
+
+#### MAIN ####
+(root, up_anno) = get_structure('LRG_1.xml')
+(lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
+(coord, chro, NC_trans, gstart, gend) = get_build_info(up_anno)
+filename = ('LRG_1.xml')
+(gene) = get_gene_name(filename)
+(exon_number, coord_start, coord_end, strand) = exon_lst(filename)

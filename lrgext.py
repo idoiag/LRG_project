@@ -29,7 +29,6 @@ def get_background(root):
                 
         print ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
         return ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
-        #return
 
 def get_build_info(up_anno):        
     for annotation in up_anno[1].findall('mapping'):
