@@ -15,3 +15,8 @@ The program runs several tests to test the input and if an output can be provide
      
     b) modules
       1. Access the LRG-sequence.org with an specific Gene name 
+      2. Extraction of information
+      3. Define the genomic coordinates for ezch exos regarding GRCh37 and GRCh38
+      4. Compare coordnates
+ 
+      
