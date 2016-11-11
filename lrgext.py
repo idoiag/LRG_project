@@ -21,11 +21,28 @@ def get_background(root):
         for transcript in root.findall("./fixed_annotation/transcript"):
             transcript = transcript.get('name')
             
+            #### Variables still need to be included in the return/print statement
+            
             for coordinates in root.findall("./fixed_annotation/transcript/coordinates"):
                 cs = coordinates.get('coord_system')
                 start_cs = coordinates.get('start')
                 end_cs = coordinates.get('end')
                 strand_cs = coordinates.get('strand')
+                
+            for coordinates in root.findall("./fixed_annotation/transcript/coding_region/coordinates"):
+                cs_cr = coordinates.get('coord_system')
+                start_cs_cr = coordinates.get('start')
+                end_cs_cr = coordinates.get('end')
+                strand_cs_cr = coordinates.get('strand')
+                
+            for coor_exon in root.findall("./fixed_annotation/transcript/exon"):
+                exon_number = coordinates.get('label')
+                
+                for coor_exon in root.findall("./fixed_annotation/transcript/exon/coordinates"):
+                    exonC_start = coor_exon.get('start')
+                    exonC_end = coor_exon.get('end')
+                    
+            ###### End of variables ########
                 
         print ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
         return ( lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
