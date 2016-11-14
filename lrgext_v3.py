@@ -17,7 +17,7 @@ def get_structure(data):
     tree = ET.parse(data)
     root = tree.getroot()
     #fix_anno = tree.getroot()[0]
-    #up_anno = tree.getroot()[1]
+    up_anno = tree.getroot()[1]
     return(root, up_anno)
 
 def get_background(root):
