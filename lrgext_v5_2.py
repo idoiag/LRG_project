@@ -13,21 +13,19 @@ import os.path
 """
 https://www.tutorialspoint.com/python/python_command_line_arguments.htm
 """
-data = './LRGs/LRG_9.xml'
+LRG = 'LRG_517'
+path = './LRGs/'
+data = path + LRG + '.xml'
+
 
 # ask user to input LRG name
 # filename = input("Enter LRG name: ")
-
-# check file is in xml format. If not, return error message "Not an xml file"
-
-# add try, except to close program if no LRG exists
 
 # change to  tree = ET.parse(filename + '.xml') once program is ready
 
 def get_structure(data):
     tree = ET.parse(data)
     root = tree.getroot()
-    #fix_anno = tree.getroot()[0]
     up_anno = tree.getroot()[1]
     return(root, up_anno)
 
@@ -58,7 +56,8 @@ def get_background(root):
 
 
 def get_build_info(up_anno):
-    """Get build information """
+    """Get build information, including coordinates, chromosome, transcript,
+    and genomic start and end"""
     
     for annotation in up_anno[1].findall('mapping'):
         coord = annotation.get('coord_system')
@@ -72,12 +71,15 @@ def get_build_info(up_anno):
 def get_up_anno(data):
     """Get information about the strand information """
     
+    # Extracting name of gene
     gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
     print('Gene: ', gene)
 
     # Determining the strand direction(e.g. 517 is "+")
     for annotation in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span'):
         str_dir = annotation.attrib['strand']
+        
+        # marking forward strand as "+" and negative as "-"
         if (str_dir == "1"):
             str_dir = "+"
         else:
@@ -93,58 +95,54 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
     trans_number = 0
     list_all_coord, list4bed = [], []
     
-    # LRG_214 has two transcripts
+    # Loop to extract information when there is more than 1 transcript 
+    # (e.g.LRG_214 has two transcripts
     for transcripts in root.findall('./fixed_annotation/transcript'):
         trans_number += 1
      
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
         print( "Transcript number: ", trans_number, 'Exon count: ', len(exon_lst))
-        #list_ex, list_ex_tr,list_ex_pt, list_ex  = [],[],[],[]
     
         for exons in transcripts.findall('exon'):
             ex_num = exons.get('label')
             
+            # Extracting transcript, protein and exon coordinates (in this order)
             for coord in exons.findall('coordinates'):
                 
                 if (coord.get('coord_system').find("t")!=-1):
                     start_ex_tr = coord.get('start')
                     end_ex_tr = coord.get('end')
-                    #list_ex_tr.append([ex_num, start_ex_tr, end_ex_tr])
                 
                 elif (coord.get('coord_system').find("p")!=-1):
                     start_ex_pt = coord.get('start')
                     end_ex_pt = coord.get('end')
-                    #list_ex_pt.append([ex_num, start_ex_pt, end_ex_pt])
                     
                 else:
                     start_ex = coord.get('start')
                     end_ex = coord.get('end')
                     g_start_ex = start_ex + gstart
                     g_end_ex = end_ex + gend
-                    #list_ex.append([ex_num, start_ex, end_ex])
-                    
+            
+            # Create list of coordinates
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt]  )
-        
+    
+    # Preparing lists to be print in columns
     for group in list_all_coord: 
         print ("\t".join(group) + "\n")
                 
-    #return (list_ex, list_ex_tr, list_ex_pt)
     return (list_all_coord, list4bed)
      
 def output2file(list_all_coord, list4bed):
     """ Creating csv, a tab separate txt file with exon, transcripts and 
     protein coordinates and a bed file"""
 
-    #db = open("LRG_coord.txt","w")
-    #db_csv = open("LRG_coord.csv","w")
-    #bed = open ("LRG_bed", "w")
-    
+    # Opening files to read and write. If not existing, it will create a new one
     db = open("./Outputs/LRG_coord.txt","w")
     db_csv = open("./Outputs/LRG_coord.csv","w")
     bed = open ("./Outputs/LRG_bed", "w")
     
-        
+    # Add headings to files
     headings = ["transcript","exon", "ex_start", "ex_end", "tr_start", "tr_end", "pt_start", "pt_end"]
     bed_headings = ["chr", "start", "end", "strand", "transcript" ]
     
@@ -157,11 +155,13 @@ def output2file(list_all_coord, list4bed):
     db_csv.write(",".join(headings) + "\n") # writting headings
     for group in list_all_coord:   
         db_csv.write (",".join(group) + "\n") # writting coordinates
-
+    
+    #Writting bed file
     bed.write("\t".join(bed_headings) + "\n") # writting headings
     for group in list4bed:   
         bed.write ("\t".join(group) + "\n")
-
+    
+    # Closing files
     db.close()
     db_csv.close()
     bed.close()
@@ -180,7 +180,6 @@ def disclaimer():
     Faculty of Medicine and Human Sciences, The University of Manchester.' or successor 
     references as defined by the authors.\n""")
     
-    ## NEed to be added the coyright by the NHS
     return
     
 ##### TESTING #####
@@ -195,7 +194,12 @@ def initial_tests():
     
     if (os.path.exists(data) == False):
         print ("Data does not exits")
+     
+    # check file is in xml format. If not, return error message "Not an xml file"
+    # add try, except to close program if no LRG exists
+        
     return
+    
     
 def final_tests():  
     """Tests run at the end of the program"""
@@ -252,15 +256,19 @@ final_tests() # 9
 - Adding disclaimer v.4.1
 - Creation of a bed file v.5
 - Organisation of input and outputs into folders v.5.1
+- Splitting of input file name. Code clean, comments added v.5.2
+
 
 ...... TO BE DONE
 1. Compare builds
 2. Adding further tests
+3. Resolve issues with LRG_62 and LRG_292
 
 
 ...... OUTLOOK (time allowed)
 1. Providing comand line input to access directly the files/webpage
 2. Adding new test using 'assert'
-3. Creating the name of the file automatically
+3. Automatic creation of output file names
+
 
 """

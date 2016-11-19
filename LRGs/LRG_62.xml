@@ -123,7 +123,7 @@
           <email>Mauno.Vihinen@med.lu.se</email>
         </contact>
       </source>
-      <modification_date>2016-11-09</modification_date>
+      <modification_date>2016-11-14</modification_date>
     </annotation_set>
     <annotation_set type="lrg">
       <source>
@@ -135,7 +135,7 @@
           <email>feedback@lrg-sequence.org</email>
         </contact>
       </source>
-      <modification_date>2016-11-09</modification_date>
+      <modification_date>2016-11-14</modification_date>
       <mapping coord_system="GRCh37.p13" other_name="Xp11.23-11.22" other_id="NW_004070880.2" other_id_syn="JH806590.2" other_start="1487865" other_end="1509254" type="patch">
         <mapping_span lrg_start="1" lrg_end="21392" other_start="1487865" other_end="1509254" strand="-1">
           <diff type="lrg_ins" lrg_start="3268" lrg_end="3268" other_start="1505987" other_end="1505988" lrg_sequence="T" other_sequence="-" />
@@ -172,7 +172,7 @@
         </contact>
       </source>
       <comment>Annotation from NG_007392.1</comment>
-      <modification_date>2016-11-07</modification_date>
+      <modification_date>2016-11-11</modification_date>
       <mapping coord_system="NM_001114377.1" other_name="NM_001114377.1" other_id="NM_001114377.1" other_start="1" other_end="2277" type="transcript">
         <mapping_span lrg_start="5001" lrg_end="5166" other_start="1" other_end="166" strand="1" />
         <mapping_span lrg_start="11305" lrg_end="11536" other_start="167" other_end="398" strand="1" />
@@ -376,7 +376,7 @@
         </contact>
       </source>
       <comment>Annotation is based on Ensembl release 86 (GRCh38  primary assembly)</comment>
-      <modification_date>2016-11-09</modification_date>
+      <modification_date>2016-11-14</modification_date>
       <mapping coord_system="ENST00000376197.1" other_name="ENST00000376197.1" other_id="ENST00000376197.1" other_start="1" other_end="1326" type="transcript">
         <mapping_span lrg_start="10592" lrg_end="10607" other_start="1" other_end="16" strand="1" />
         <mapping_span lrg_start="11388" lrg_end="11536" other_start="17" other_end="165" strand="1" />
@@ -808,7 +808,7 @@
         <name>List of locus specific databases for FOXP3</name>
         <url>http://grenada.lumc.nl/LSDB_list/lsdbs/FOXP3</url>
       </source>
-      <modification_date>2016-11-09</modification_date>
+      <modification_date>2016-11-14</modification_date>
     </annotation_set>
   </updatable_annotation>
 </lrg>
