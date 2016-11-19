@@ -193,7 +193,7 @@
           <email>andrew.devereau@cmmc.nhs.uk</email>
         </contact>
       </source>
-      <modification_date>2016-11-09</modification_date>
+      <modification_date>2016-11-14</modification_date>
     </annotation_set>
     <annotation_set type="lrg">
       <source>
@@ -205,7 +205,7 @@
           <email>feedback@lrg-sequence.org</email>
         </contact>
       </source>
-      <modification_date>2016-11-09</modification_date>
+      <modification_date>2016-11-14</modification_date>
       <mapping coord_system="GRCh37.p13" other_name="17" other_id="NC_000017.10" other_id_syn="CM000679.1" other_start="41176312" other_end="41370000" type="other_assembly">
         <mapping_span lrg_start="1" lrg_end="193689" other_start="41176312" other_end="41370000" strand="-1" />
       </mapping>
@@ -236,7 +236,7 @@
         </contact>
       </source>
       <comment>Annotation from NG_005905.2</comment>
-      <modification_date>2016-11-07</modification_date>
+      <modification_date>2016-11-11</modification_date>
       <mapping coord_system="NM_007294.3" other_name="NM_007294.3" other_id="NM_007294.3" other_start="1" other_end="7207" type="transcript">
         <mapping_span lrg_start="92501" lrg_end="92713" other_start="1" other_end="213" strand="1" />
         <mapping_span lrg_start="93869" lrg_end="93967" other_start="214" other_end="312" strand="1" />
@@ -1000,11 +1000,11 @@
           <db_xref source="GeneID" accession="672" />
           <db_xref source="HGNC" accession="HGNC:1100" />
           <db_xref source="MIM" accession="113705" />
+          <db_xref source="CCDS" accession="CCDS11454.2" />
+          <db_xref source="CCDS" accession="CCDS11459.2" />
           <db_xref source="CCDS" accession="CCDS11453.1" />
           <db_xref source="CCDS" accession="CCDS11455.2" />
           <db_xref source="CCDS" accession="CCDS11456.2" />
-          <db_xref source="CCDS" accession="CCDS11459.2" />
-          <db_xref source="CCDS" accession="CCDS11454.2" />
           <db_xref source="GI" accession="262359905" />
           <transcript source="RefSeq" accession="NM_007300.3">
             <coordinates coord_system="LRG_292" start="92501" end="173689" strand="1" />
@@ -1472,7 +1472,7 @@
         </contact>
       </source>
       <comment>Annotation is based on Ensembl release 86 (GRCh38  primary assembly)</comment>
-      <modification_date>2016-11-09</modification_date>
+      <modification_date>2016-11-14</modification_date>
       <mapping coord_system="ENST00000352993.7" other_name="ENST00000352993.7" other_id="ENST00000352993.7" other_start="1" other_end="3668" type="transcript">
         <mapping_span lrg_start="92614" lrg_end="92713" other_start="1" other_end="100" strand="1" />
         <mapping_span lrg_start="93869" lrg_end="93967" other_start="101" other_end="199" strand="1" />
@@ -4132,7 +4132,7 @@
         <name>List of locus specific databases for BRCA1</name>
         <url>http://grenada.lumc.nl/LSDB_list/lsdbs/BRCA1</url>
       </source>
-      <modification_date>2016-11-09</modification_date>
+      <modification_date>2016-11-14</modification_date>
     </annotation_set>
   </updatable_annotation>
 </lrg>

@@ -13,7 +13,7 @@ import os.path
 """
 https://www.tutorialspoint.com/python/python_command_line_arguments.htm
 """
-LRG = 'LRG_517'
+LRG = 'LRG_62'
 path = './LRGs/'
 data = path + LRG + '.xml'
 
@@ -57,7 +57,8 @@ def get_background(root):
 
 def get_build_info(up_anno):
     """Get build information, including coordinates, chromosome, transcript,
-    and genomic start and end"""
+    and genomic start and end. It will provide "N/A", when protein coordinates are not
+    available"""
     
     for annotation in up_anno[1].findall('mapping'):
         coord = annotation.get('coord_system')
@@ -107,8 +108,13 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
             ex_num = exons.get('label')
             
             # Extracting transcript, protein and exon coordinates (in this order)
+             # Print "N/A" if protein coordinates are not available (e.g. LRG_292)
+            start_ex_pt = "N/A"
+            end_ex_pt = "N/A"
+            g_start_ex_pt = "N/A"
+            g_end_ex_pt = "N/A"
+            
             for coord in exons.findall('coordinates'):
-                
                 if (coord.get('coord_system').find("t")!=-1):
                     start_ex_tr = coord.get('start')
                     end_ex_tr = coord.get('end')
@@ -117,12 +123,15 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
                     start_ex_pt = coord.get('start')
                     end_ex_pt = coord.get('end')
                     
-                else:
+                elif (coord.get('coord_system').find("p")==-1) or (coord.get('coord_system').find("t" )==-1):
                     start_ex = coord.get('start')
                     end_ex = coord.get('end')
                     g_start_ex = start_ex + gstart
                     g_end_ex = end_ex + gend
-            
+                
+                else:
+                    print ("problem when extrating exon info")
+                    
             # Create list of coordinates
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt]  )
@@ -257,6 +266,7 @@ final_tests() # 9
 - Creation of a bed file v.5
 - Organisation of input and outputs into folders v.5.1
 - Splitting of input file name. Code clean, comments added v.5.2
+- Bug resolved for LRG_292 (Prot coordinates for exon 1 were missing) v.5.3
 
 
 ...... TO BE DONE
