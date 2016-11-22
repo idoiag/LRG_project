@@ -7,11 +7,21 @@
 import xml.etree.ElementTree as ET
 import os.path   
 # import sys
+"""
+Usage: 
+lrgext extract build, gene, transcript, exon information from a file in LRG format 
+producing different output files:
+    - cvs file
+    - tab separated txt file
+    - bed file
 
-#getopt.getopt(LRG, -l:, [long_options])
+"""    
+    
 
 """
+
 https://www.tutorialspoint.com/python/python_command_line_arguments.htm
+getopt.getopt(LRG, -l:, [long_options])
 """
 LRG = 'LRG_62'
 path = './LRGs/'
@@ -20,10 +30,11 @@ data = path + LRG + '.xml'
 
 # ask user to input LRG name
 # filename = input("Enter LRG name: ")
-
 # change to  tree = ET.parse(filename + '.xml') once program is ready
 
-def get_structure(data):
+def handle_xml(data):
+    """Use the 'xml.etree.ElementTreee' to extract inoformation from xml files"""
+    
     tree = ET.parse(data)
     root = tree.getroot()
     up_anno = tree.getroot()[1]
@@ -68,9 +79,17 @@ def get_build_info(up_anno):
         gend = annotation.get('other_end')
         print (coord, chro, NC_trans, gstart, gend)
         return (coord, chro, NC_trans, gstart, gend)
+        
+        ####VF CODE###
+        # Not sure if the differences between builds could be included here or 
+        # in a different function.
+        
+        ## Also to capture if difference in sequences occur in the intro/exon
+        
             
 def get_gen_data(data):
-    """Get information about the strand information """
+    """Extract gene name (HGVN nomenclature) and tag strand as 
+    forward(+) or reverse(-) """
     
     # Extracting name of gene
     gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
@@ -91,7 +110,7 @@ def get_gen_data(data):
     
 def get_exon_data(data, gstart, gend, chro, str_dir):
     """Get information about the exon for the different transcripts, including number of exons, exons coordinates 
-    in the LRG system regarding the cdna, transcript and protein. """
+    in the LRG system regarding the cdna, transcript and protein """
     
     trans_number = 0
     list_all_coord, list4bed = [], []
@@ -111,8 +130,6 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
              # Print "N/A" if protein coordinates are not available (e.g. LRG_292)
             start_ex_pt = "N/A"
             end_ex_pt = "N/A"
-            g_start_ex_pt = "N/A"
-            g_end_ex_pt = "N/A"
             
             for coord in exons.findall('coordinates'):
                 if (coord.get('coord_system').find("t")!=-1):
@@ -175,13 +192,7 @@ def output2file(list_all_coord, list4bed):
     db_csv.close()
     bed.close()
     
-    return      
-    
-def creating_bed():
-    
-    
-    return    
-    
+    return         
     
 def disclaimer():
     print ( 
@@ -192,21 +203,21 @@ def disclaimer():
     return
     
 ##### TESTING #####
-""" Section dedicated to testing the running of the programm. It is subdivided into
-initial and secondary tests"""
 
 def initial_tests():
-    """ Tests run at the beggining of the program"""
+    """ Run initial tests to check the software and file before execution"""
     
     if (os.path.isfile(data) == False) :
         print ("Data is not a readable file")
     
     if (os.path.exists(data) == False):
         print ("Data does not exits")
-     
+    
+    #### VF's code ####
     # check file is in xml format. If not, return error message "Not an xml file"
     # add try, except to close program if no LRG exists
-        
+    
+    
     return
     
     
@@ -221,29 +232,24 @@ def final_tests():
 def strand_dir():
     """Check the strand direction and warn if in reverse.
     Use LRG_571 for a forward strad example  """
+    #### IDOIA CODE ####
     
     return
 
 def builds():
+    
+    #### VF's code
     # if transcript number differ between builds 37 and 38:
     # print("Do transcripts match between builds? ", True/False)
+    
     return
     
 ### End of testing ###   
    
-#### MAIN ####
-""" Main program running through different steps:
-    1. Initial tests
-    2. Getting background information
-    3. Get information about the different builds
-    4. Get information about the strand
-    5. Get information about the exon
-    6. Save exon, transcrip and protein coordinates to file
-    7. Running of the final tests
-"""
+#### MAIN information ####
 
 initial_tests()   # 1
-(root, up_anno) = get_structure(data)  # 2
+(root, up_anno) = handle_xml(data)  # 2
 (schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root) # 3
 (coord, chro, NC_trans, gstart, gend) = get_build_info(up_anno) # 4
 (gene, str_dir) = get_gen_data(data) # 5
@@ -254,7 +260,20 @@ final_tests() # 9
 
 
 ### End of Main ###
-""" 
+
+""" THIS SECTION CAN BE DELETED AT THE END
+
+Main program running through different steps:
+    1. Initial tests
+    2. Handle xml structure
+    3. Get background information
+    4. Get information about the different builds
+    5. Get information about the gene and strand
+    6. Get information about the exon
+    7. Save exon, transcript and protein coordinates to file
+    8. Run of final tests
+
+
 .......DONE: Versions
 - Extracting background information about the gene: v1
 - Making the code modular: v2
@@ -266,13 +285,16 @@ final_tests() # 9
 - Creation of a bed file v.5
 - Organisation of input and outputs into folders v.5.1
 - Splitting of input file name. Code clean, comments added v.5.2
-- Bug resolved for LRG_292 (Prot coordinates for exon 1 were missing) v.5.3
+- Bug resolved for LRG lacking first prot. coordinates in exon 1 
+    (e.g. LRG_292 and LRG 62). Comments revised, added and updated v.5.3
 
 
 ...... TO BE DONE
-1. Compare builds
-2. Adding further tests
-3. Resolve issues with LRG_62 and LRG_292
+1. Compare builds indicating if seq. changes occur in introns/exons: VF
+2. Add test to check for strand: IGP 
+3. Add test to check if file is in xml format: VF
+4. Add test regarding builds: VF
+5. Any other tests suggested (See section Control in Readme file):VF
 
 
 ...... OUTLOOK (time allowed)
