@@ -294,7 +294,8 @@ Main program running through different steps:
 2. Add test to check for strand: IGP 
 3. Add test to check if file is in xml format: VF
 4. Add test regarding builds: VF
-5. Any other tests suggested (See section Control in Readme file):VF
+5. Add main test: IGP
+6. Any other tests suggested (See section Control in Readme file):VF
 
 
 ...... OUTLOOK (time allowed)
