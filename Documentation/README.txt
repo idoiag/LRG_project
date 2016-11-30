@@ -1,52 +1,68 @@
-/Text within slashes is temp and will be deleted in a final version/
+/Text within slashes is temp and will be deleted in a final version. IP =In progress. Done = Only minor amendments/addition/updates expected/
 
 ##############  README ############
 
-#### BACKGROUND /VF/
+#### BACKGROUND /VF, IP/
 /Examples: 
-Why are LRGs are important, use, challenge
-How can an xml parser could help the diagnostic service,
+Why LRGs are important, use, challenges,
+How can an xml parser help the diagnostic service,
+How can bioinformaticians help > great idea to have a parser
 Etc… /
 
 
-#### USAGE/INSTALLATION
+#### USAGE/INSTALLATION /IGP, IP/
 
-
-
-
-
-
-
-#### FEATURES 
-
-
-
-lrgext extract build, gene, transcript, exon information from a file in LRG format 
+lrg does not require installation and can be run from the command line by providing the LRG file as an argument.
+lrg will extract build, gene, transcript, exon information from a file in LRG format 
 producing different output files:
-    - cvs file
-    - tab separated txt file
-    - bed file
+    - cvs file: provides the exon, transcript and protein coordinates separated by comma /IGP/
+    - tab separated txt file: provides the exon, transcrip and protein coordinates separated by tab /IGP/
+    - bed file: provides the local coordinates and their equivalent genomic coordinates for each exon /IGP/
+    /- build mapper: provides the differences between the builds, highlighting if variants lie in intronic/exonic regions /VF//
+	
+/get ops code or arguments need still to be added to the program /IGP/. We also need to produce another doc 
+highlighting the differences between the builds (VF) /
+
+#### FEATURES /IGP + VF/
+/2-  3 lines to introduce the main topic, and 1-3 lines to introduce each function/
 
 
-Control/Tests (in development)
+1.Testing: 
+Testing is important because bla, bla... /VF/
 
-(Control BRCA1)
-    1. LRG_ID: check if the given gene has an allocated LRG ID
-     2. Strain: check the direction of the strand. - IP
-     3. Build_number: check the number of build provided. If more than one, check that coordinates are diff. 
-     4. Build_coor: check that the start and end of the coordinate for each build are different
-     5. Data_consistency: check that coordinates extracted are numbers
-     6. Exon_coor: check that exons do not overlap
-     7. Exon_number: check that we get the right number of exons
-     8. Check the schema version - DONE
-     10. Build_number: check the 
-     9. Check the LRG exists and is a readable file - DONE but it might be superfluous. There is already a CL in-built system
+/This is a list of tests initally suggested. We also proposed to use BRCA as a control. 1-3 lines to describe each
+function, IGP  + VF as required/
+
+	1. LRG_ID: check if the given gene has an allocated LRG ID. /VF?/
+	2. Check the LRG exists and is a readable file. /IGP, DONE /this test might be superfluous. There is already a CL in-built system/
+	3. Strain: check the direction of the strand. /IGP, In Progress/
+	4. Build_number: check the number of build provided. If more than one, check that coordinates are diff. /VF ?/
+	5. Build_coor: check that the start and end of the coordinate for each build are different /VF ?/
+	6. Data_consistency: check that coordinates extracted are numbers /IGP ?/
+	7. Exon_coor: check that exons do not overlap /IGP ?/
+	8. Exon_number: check that we get the right number of exons /IGP ?/
+	9. Check the schema version - /IGP, DONE/
+	10. Main - /IGP, IP /
+  
+2.Parsing:
+Parsing is important or whatever, bla, bla /VF/
+
+Parsing Features:
+/Describe the parsing functions, 1-3 lines per function, IGP + VF as required/
+
+
+3.Files generation:
+Results need to be gathered and collected in a way that allows it furhter use by other professionals. This could be in 
+a human readable way  (e.g. tab separated document, build mapper) or in a script readable way (e.g. bed and cvs file).
+... bla, bla /VF/
+
+File generation features:
+/Describe the file generation functions, 1-3 lines per function, IGP + VF as required/
       
-b) 
 
-#### STRUCTURE /IGP/
+#### STRUCTURE /IGP, Done/
 
-Main program running through different steps, function provided in brackets: 
+Main program running through different steps: 
 1. Initial tests: 
 Aim: Run initial tests to check the software and file before execution
 Function:initial_tests()
@@ -86,10 +102,9 @@ Function: final_tests()
 
 Note: Refer to Developers file for further information
 
-
-
-#### SCOPE /VF/
-This software has been tested with a sample of .xml files obtained from the LRG website. We have tried to include the main genes analysed in diagnostic labstories, such as:
+#### SCOPE /VF, IP/
+This software has been tested with a sample of .xml files obtained from the LRG website. 
+We have tried to include the main genes analysed in diagnostic labstories, such as:
 
 /Here we include a list of the genes tested, the gene name and its main impact/
 
@@ -100,7 +115,7 @@ LRG_ ….
 /N.B. LRG.xml files included for testing purposes include: LRG_1 (Gene COL1A1) LRG_9 (Gene SDHD) Pending approval, not public yet LRG_214 (Gene NF1) Two transcripts LRG_292 (Gene BRCA1) Reverse strand/
 
 
-#### VERSIONING /IGP/
+#### VERSIONING /IGP, Done/
 
 - Extracting background information about the gene: v1
 - Making the code modular: v2
@@ -116,10 +131,10 @@ LRG_ ….
     (e.g. LRG_292 and LRG 62). Comments revised, added and updated v.5.3 
 
 
-#### DISCLAIMER /IGP/
+#### DISCLAIMER /IGP, Done/
 Please cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, Faculty of Medicine and Human Sciences, The University of Manchester.' or successor references as defined by the authors.
 
-For further information, refer to COPYRIGHT 
+For further information, refer to COPYRIGHT /IGP, Done/
 
 
      
