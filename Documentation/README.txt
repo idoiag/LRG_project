@@ -12,7 +12,7 @@ Etc… /
 
 #### USAGE/INSTALLATION /IGP, IP, pending on features being added/
 
-lrg does not require installation and can be run from the command line by providing the LRG file as an argument.
+lrg does not require installation and can be run from the command line by providing the LRG name as an argument (default extension is .xml).
 lrg will extract build, gene, transcript, exon information from a file in LRG format 
 producing different output files:
     - cvs file: provides the exon, transcript and protein coordinates separated by comma /IGP/
