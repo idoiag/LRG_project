@@ -10,7 +10,7 @@ How can bioinformaticians help > great idea to have a parser
 Etc… /
 
 
-#### USAGE/INSTALLATION /IGP, IP/
+#### USAGE/INSTALLATION /IGP, IP, pending on features being added/
 
 lrg does not require installation and can be run from the command line by providing the LRG file as an argument.
 lrg will extract build, gene, transcript, exon information from a file in LRG format 
@@ -24,28 +24,33 @@ producing different output files:
 highlighting the differences between the builds (VF) /
 
 #### FEATURES /IGP + VF/
-/2-  3 lines to introduce the main topic, and 1-3 lines to introduce each function/
+
+/Background:VF 
+Example: sell our program highlighting that is robust, efficient and its code could be reused since it was built in modules 
+(see features below).
+Also, it would be good if we could provide examples of having it built following the principles of defensive programming 
+(i.e. using tests, see testing secton) but it will be important to build a test using assert. Ideally we could include a section of how we deal with error handling,
 
 
 1.Testing: 
-Testing is important because bla, bla... /VF/
+Testing is important because bla, bla... / 2-3 lines, VF/
 
-/This is a list of tests initally suggested. We also proposed to use BRCA as a control. 1-3 lines to describe each
+/This is a list of tests we initally suggested. We also proposed to use BRCA as a control. 1-3 lines to describe each
 function, IGP  + VF as required/
 
 	1. LRG_ID: check if the given gene has an allocated LRG ID. /VF?/
-	2. Check the LRG exists and is a readable file. /IGP, DONE /this test might be superfluous. There is already a CL in-built system/
-	3. Strain: check the direction of the strand. /IGP, In Progress/
+	2. Check the LRG exists and is a readable file. /IGP, DONE /
+	3. Check that the xml version format (schema) is right: IGP, Done
+
+	3. Strand: check the direction of the strand. /IGP, In Progress/
 	4. Build_number: check the number of build provided. If more than one, check that coordinates are diff. /VF ?/
 	5. Build_coor: check that the start and end of the coordinate for each build are different /VF ?/
-	6. Data_consistency: check that coordinates extracted are numbers /IGP ?/
-	7. Exon_coor: check that exons do not overlap /IGP ?/
-	8. Exon_number: check that we get the right number of exons /IGP ?/
-	9. Check the schema version - /IGP, DONE/
-	10. Main - /IGP, IP /
-  
+	6. Data_consistency: check that coordinates extracted are numbers /IGP/VF ?/
+	7. Exon_coor: check that exons do not overlap /IGP/VF ?/
+	8. Exon_number: check that we get the right number of exons /IGP/VF?/
+	  
 2.Parsing:
-Parsing is important or whatever, bla, bla /VF/
+Parsing is important or whatever, bla, bla /2-3 lines, VF/
 
 Parsing Features:
 /Describe the parsing functions, 1-3 lines per function, IGP + VF as required/
@@ -102,7 +107,7 @@ Function: final_tests()
 
 Note: Refer to Developers file for further information
 
-#### SCOPE /VF, IP/
+#### SCOPE /VF/
 This software has been tested with a sample of .xml files obtained from the LRG website. 
 We have tried to include the main genes analysed in diagnostic labstories, such as:
 
