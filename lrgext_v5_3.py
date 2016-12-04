@@ -58,12 +58,11 @@ def get_background(root):
                 strand_cs = coordinates.get('strand')
 
         print (schema)
-        print (lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
-        return (schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
+        print (lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
+        return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
-
-def get_build_info(up_anno):
 """Get build information, including coordinates, chromosome, transcript and genomic start and end. It will provide "N/A", when protein coordinates are not available"""
+def get_build_info(up_anno):
     for annotation in up_anno[1].findall('mapping'):
         coord = annotation.get('coord_system')
         chro = annotation.get('other_name')
@@ -97,8 +96,8 @@ def get_gen_data(data):
         print (str_dir)
 
     return (gene, str_dir)
-"""Get information about the exon for the different transcripts, including number of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein """
 
+"""Get information about the exon for the different transcripts, including number of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein """
 def get_exon_data(data, gstart, gend, chro, str_dir):
 
     trans_number = 0
