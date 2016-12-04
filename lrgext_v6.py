@@ -6,7 +6,7 @@
 
 import xml.etree.ElementTree as ET
 import os.path
-# import sys
+import sys
 """
 Usage: lrgext extract build, gene, transcript, exon information from a file in LRG format
 producing different output files:
@@ -14,29 +14,36 @@ producing different output files:
     - tab separated txt file
     - bed file
 """
-
 """
-https://www.tutorialspoint.com/python/python_command_line_arguments.htm
-getopt.getopt(LRG, -l:, [long_options])
-
+Capturing file and Initializying variables
 """
-LRG = 'LRG_62'
+script = sys.argv[0]
+LRG = sys.argv[1]
+#LRG = 'LRG_62'
 path = './LRGs/'
 data = path + LRG + '.xml'
+
+#A furhter improvement would be the addtion of get -ops
+#https://www.tutorialspoint.com/python/python_command_line_arguments.htm
+#getopt.getopt(LRG, -l:, [long_options])
 
 # ask user to input LRG name
 # filename = input("Enter LRG name: ")
 # change to tree = ET.parse(filename + '.xml') once program is ready
 # use sys.argv for user to enter filename at the command line. Need to import sys.
 
-"""Use the 'xml.etree.ElementTreee' to extract information from xml files"""
+"""
+Parse .xml file with 'xml.etree.ElementTreee' 
+"""
 def handle_xml(data):
     tree = ET.parse(data)
     root = tree.getroot()
     up_anno = tree.getroot()[1]
     return(root, up_anno)
 
-"""Get background information about the gene"""
+"""
+Get gene background information 
+"""
 def get_background(root):
 
     for lrg in root.findall ("."):
@@ -61,7 +68,10 @@ def get_background(root):
         print (lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
-"""Get build information, including coordinates, chromosome, transcript and genomic start and end. It will provide "N/A", when protein coordinates are not available"""
+"""
+Get build information, including coordinates, chromosome, transcript and genomic start and end. 
+It will provide "N/A", when protein coordinates are not available
+"""
 def get_build_info(up_anno):
     for annotation in up_anno[1].findall('mapping'):
         coord = annotation.get('coord_system')
@@ -77,7 +87,9 @@ def get_build_info(up_anno):
         # Also to capture if difference in sequences occur in the intro/exon
 ###
 
-"""Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)"""
+"""
+Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
+"""
 def get_gen_data(data):
 
     # Extracting name of gene
@@ -97,7 +109,10 @@ def get_gen_data(data):
 
     return (gene, str_dir)
 
-"""Get information about the exon for the different transcripts, including number of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein """
+"""
+Get information about the exon for the different transcripts, including number of 
+exons, exons coordinates in the LRG system regarding the cdna, transcript and protein 
+"""
 def get_exon_data(data, gstart, gend, chro, str_dir):
 
     trans_number = 0
@@ -145,7 +160,9 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
         print ("\t".join(group) + "\n")
     return (list_all_coord, list4bed)
 
-""" Creating .csv, a comma separated text file with exon, transcripts and protein coordinates and a bed file"""
+"""
+Creating .csv, a comma separated text file with exon, transcripts and protein 
+coordinates and a bed file"""
 def output2file(list_all_coord, list4bed):
     # Open file in read/write format. If one doesn't exist, it  will create a new one
     db = open("./Outputs/LRG_coord.txt","w")
@@ -199,7 +216,9 @@ def initial_tests():
     # add try, except to close program if no LRG exists
     return
 
-"""Tests run at the end of the program"""
+"""
+Tests run at the end of the program
+"""
 def final_tests():
     if schema != "1.9":  # Checking for xml format
         print ("""lrgext supports LRG xmls built using schema 1.9. Please be aware of data incongruencies""")
@@ -232,49 +251,5 @@ output2file(list_all_coord, list4bed) # 7
 disclaimer() # 8
 final_tests() # 9
 
-
 ### End of Main ###
 
-""" THIS SECTION CAN BE DELETED AT THE END
-
-Main program running through different steps:
-    1. Initial tests
-    2. Handle xml structure
-    3. Get background information
-    4. Get information about the different builds
-    5. Get information about the gene and strand
-    6. Get information about the exon
-    7. Save exon, transcript and protein coordinates to file
-    8. Run of final tests
-
-
-.......DONE: Versions
-- Extracting background information about the gene: v1
-- Making the code modular: v2
-- Adding examples of initial and final test: v2.1
-- Extracting exon, transcript and protein coordinates: v3
-- Output: it creates a csv and tab separate text file: v3.1
-- Dealing with more than one transcript v.4
-- Adding disclaimer v.4.1
-- Creation of a bed file v.5
-- Organisation of input and outputs into folders v.5.1
-- Splitting of input file name. Code clean, comments added v.5.2
-- Bug resolved for LRG lacking first prot. coordinates in exon 1 
-    (e.g. LRG_292 and LRG 62). Comments revised, added and updated v.5.3
-
-
-...... TO BE DONE
-1. Compare builds indicating if seq. changes occur in introns/exons: VF
-2. Add test to check for strand: IGP 
-3. Add test to check if file is in xml format: VF
-4. Add test regarding builds: VF
-5. Add main test: IGP
-6. Any other tests suggested (See section Control in Readme file):VF
-
-
-...... OUTLOOK (time allowed)
-1. Providing comand line input to access directly the files/webpage
-2. Adding new test using 'assert'
-3. Automatic creation of output file names
-
-"""

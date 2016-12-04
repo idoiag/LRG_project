@@ -12,16 +12,15 @@ Etc. /
 
 #### USAGE/INSTALLATION /IGP, IP, pending on features being added/
 
-lrg does not require installation and can be run from the command line by providing the LRG name as an argument (default extension is .xml).
-lrg will extract build, gene, transcript, exon information from a file in LRG format 
+lrgext does not require installation and can be run from the command line by providing the LRG name as an argument (default extension is .xml).
+lrgext will extract build, gene, transcript, exon information from a file in LRG format 
 producing different output files:
     - cvs file: provides the exon, transcript and protein coordinates separated by comma /IGP/
     - tab separated txt file: provides the exon, transcrip and protein coordinates separated by tab /IGP/
     - bed file: provides the local coordinates and their equivalent genomic coordinates for each exon /IGP/
     /- build mapper: provides the differences between the builds, highlighting if variants lie in intronic/exonic regions /VF//
 	
-/get ops code or arguments need still to be added to the program /IGP/. We also need to produce another doc 
-highlighting the differences between the builds (VF) /
+/We  need to produce another doc highlighting the differences between the builds (VF) /
 
 #### FEATURES /IGP + VF/
 
@@ -120,18 +119,20 @@ LRG_214 = NF1: Used to test handling of more than one transcript contained withi
 
 #### VERSIONING /IGP, Done/
 
-- Extracting background information about the gene: v1
-- Making the code modular: v2
-- Adding examples of initial and final test: v2.1
-- Extracting exon, transcript and protein coordinates: v3
-- Output: it creates a csv and tab separate text file: v3.1
-- Dealing with more than one transcript: v.4
-- Adding disclaimer: v.4.1
-- Creation of a bed file: v.5
-- Organisation of input and outputs into folders: v.5.1
-- Automatic creation of output file name. Code clean, comments added:v.5.2
-- Bug resolved for LRG lacking first prot. coordinates in exon 1 
+- Feature added: Extracting background information about the gene: v1
+- Feature: Making the code modular: v2
+- Improvement: Adding examples of initial and final test: v2.1
+- Feature: Extracting exon, transcript and protein coordinates: v3
+- Feature: Creation of output: csv and tab separate text file: v3.1
+- Feature: Dealing with more than one transcript: v.4
+- Improvement: Adding disclaimer: v.4.1
+- Feature: Creation of a bed file: v.5
+- Improvement: Organisation of input and outputs into folders: v.5.1
+- Improvement: Splitting of input file name. cleaning of code clean, comments added:v.5.2
+- Improvement: Bug resolved for LRG lacking first prot. coordinates in exon 1 
     (e.g. LRG_292 and LRG 62). Comments revised, added and updated v.5.3 
+- Feature: Addition of command line arguments. Now ".xml" file can be provided from the command line v.6
+
 
 #### DISCLAIMER /IGP, Done/
 Please cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, Faculty of Medicine and Human Sciences, The University of Manchester.' or successor references as defined by the authors.
