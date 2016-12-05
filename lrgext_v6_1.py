@@ -1,45 +1,65 @@
 # -*- coding: utf-8 -*-
-"""
-@authors: Idoia Gomez-Paramio and Verity Fryer 2016
-
-"""
+# Authors: Idoia Gomez-Paramio and Verity Fryer 2016
+# Usage: python lrgext_v6_1.py LRG_ID (e.g. LRG_292)
 
 import xml.etree.ElementTree as ET
 import os.path
 import sys
+
+
 """
-Usage: lrgext extract build, gene, transcript, exon information from a file in LRG format
+lrgext extracts build, gene, transcript, exon information from a file in LRG format
 producing different output files:
-    - cvs file
-    - tab separated txt file
+    - .csv file
+    - tab separated .txt file
     - bed file
 """
+
 """
-Capturing file and Initializying variables
+Capturing file and initializing variables
 """
+
 script = sys.argv[0]
 LRG = sys.argv[1]
-#LRG = 'LRG_62'
+#LRG = 'LRG_62' for example
 path = './LRGs/'
 data = path + LRG + '.xml'
+# Add error checking to detect if LRG doesn't exist
+#    print("No .xml file exists for the name specified")
 
-#A furhter improvement would be the addtion of get -ops
+#A further improvement would be the addtion of get -ops
 #https://www.tutorialspoint.com/python/python_command_line_arguments.htm
 #getopt.getopt(LRG, -l:, [long_options])
 
-# ask user to input LRG name
-# filename = input("Enter LRG name: ")
-# change to tree = ET.parse(filename + '.xml') once program is ready
-# use sys.argv for user to enter filename at the command line. Need to import sys.
+# Parsing .xml file with 'xml.etree.ElementTree' 
 
-"""
-Parsing .xml file with 'xml.etree.ElementTreee' 
-"""
 def handle_xml(data):
     tree = ET.parse(data)
     root = tree.getroot()
     up_anno = tree.getroot()[1]
     return(root, up_anno)
+
+"""
+# Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
+"""
+def get_gen_data(data):
+
+    # Extracting name of gene
+    gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
+    print('Gene: ', gene)
+
+    # Determining the strand direction(e.g. 517 is "+")
+    for annotation in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span'):
+        str_dir = annotation.attrib['strand']
+
+        # marking forward strand as "+" and negative as "-"
+        if (str_dir == "1"):
+            str_dir = "+"
+        else:
+            str_dir = "-"
+        print (str_dir)
+
+    return (gene, str_dir)
 
 """
 Get gene background information 
@@ -64,12 +84,12 @@ def get_background(root):
                 end_cs = coordinates.get('end')
                 strand_cs = coordinates.get('strand')
 
-        print (schema)
-        print (lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
+        print ("Schema version: " + schema)
+        print ("LRG  ID: " + lrg_id + "\n", hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
 """
-Get build information, including coordinates, chromosome, transcript and genomic start and end. 
+Get build information, including coordinates, chromosome, transcript, genomic start and genomic end.
 It will provide "N/A", when protein coordinates are not available
 """
 def get_build_info(up_anno):
@@ -84,41 +104,18 @@ def get_build_info(up_anno):
 
 ####VF CODE###
         # Not sure if the differences between builds could be included here or in a different function. 
-        # Also to capture if difference in sequences occur in the intro/exon
+        # Also to capture if difference in sequences occur in the intron/exon
 ###
 
 """
-Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
-"""
-def get_gen_data(data):
-
-    # Extracting name of gene
-    gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
-    print('Gene: ', gene)
-
-    # Determining the strand direction(e.g. 517 is "+")
-    for annotation in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span'):
-        str_dir = annotation.attrib['strand']
-
-        # marking forward strand as "+" and negative as "-"
-        if (str_dir == "1"):
-            str_dir = "+"
-        else:
-            str_dir = "-"
-        print (str_dir)
-
-    return (gene, str_dir)
-
-"""
-Get information about the exon for the different transcripts, including number of 
-exons, exons coordinates in the LRG system regarding the cdna, transcript and protein 
+Get information about the exon for the different transcripts, including number of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein
 """
 def get_exon_data(data, gstart, gend, chro, str_dir):
 
     trans_number = 0
     list_all_coord, list4bed = [], []
 
-    # Loop to extract information when there is more than 1 transcript (e.g. LRG_214 has two transcripts
+    # Loop to extract information when there is more than 1 transcript (e.g. LRG_214 has two transcripts)
     for transcripts in root.findall('./fixed_annotation/transcript'):
         trans_number += 1
 
@@ -161,8 +158,8 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
     return (list_all_coord, list4bed)
 
 """
-Creating .csv, a comma separated text file with exon, transcripts and protein 
-coordinates and a bed file"""
+Creating .csv, a comma separated text file with exon, transcripts, protein coordinates and a bed file"""
+
 def output2file(list_all_coord, list4bed):
     # Open file in read/write format. If one doesn't exist, it  will create a new one
     db = open("./Outputs/LRG_coord.txt","w")
@@ -209,7 +206,7 @@ def initial_tests():
         print ("Data is not a readable file")
 
     if (os.path.exists(data) == False):
-        print ("Data does not exits")
+        print ("Data does not exist")
 
 #### VF's code ####
     # check file is in xml format. If not, return error message "Not an xml file"
@@ -225,9 +222,9 @@ def final_tests():
     if schema != "1.9":  
         print ("""lrgext supports LRG xmls built using schema 1.9. Please be aware of data incongruencies""")
     
-    """Check the strand direction and warn if in reverse.
-    Use LRG_571 for a forward strand example  """
-    if str_dir == "-":  #Check for strand direction and warn if reverse.
+    # Check the strand direction and warn if in reverse.
+    # Use LRG_571 for a forward strand example
+    if str_dir == "-":
         print ("Note: reverse strand!")
     
     return
