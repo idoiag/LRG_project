@@ -40,7 +40,7 @@ function, IGP  + VF as required/
 	1. LRG_ID: check if the given gene has an allocated LRG ID. /VF In Progress/
 	2. Check the LRG exists and is a readable file. /IGP, DONE /
 	3. Check that the xml version format (schema) is right: IGP, Done
-	4. Strand: check the direction of the strand. /IGP, In Progress/
+	4. Strand: check the direction of the strand. /IGP, Done/
 	5. Build_number: check the number of build provided. If more than one, check that coordinates are diff. /VF In Progress/
 	6. Build_coor: check that the start and end of the coordinate for each build are different /VF In Progress/
 	7. Data_consistency: check that coordinates extracted are numbers /IGP/VF ?/
@@ -132,7 +132,7 @@ LRG_214 = NF1: Used to test handling of more than one transcript contained withi
 - Improvement: Bug resolved for LRG lacking first prot. coordinates in exon 1 
     (e.g. LRG_292 and LRG 62). Comments revised, added and updated v.5.3 
 - Feature: Addition of command line arguments. Now ".xml" file can be provided from the command line v.6
-
+- Upgrade: Addition of test for strand direction within function "final_tests" v.6.1
 
 #### DISCLAIMER /IGP, Done/
 Please cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, Faculty of Medicine and Human Sciences, The University of Manchester.' or successor references as defined by the authors.
