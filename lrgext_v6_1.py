@@ -93,14 +93,16 @@ Get build information, including coordinates, chromosome, transcript, genomic st
 It will provide "N/A", when protein coordinates are not available
 """
 def get_build_info(up_anno):
+
     for annotation in up_anno[1].findall('mapping'):
-        coord = annotation.get('coord_system')
+        build = annotation.get('coord_system')
         chro = annotation.get('other_name')
         NC_trans = annotation.get('other_id')
         gstart = annotation.get('other_start')
         gend = annotation.get('other_end')
-        print (coord, chro, NC_trans, gstart, gend)
-        return (coord, chro, NC_trans, gstart, gend)
+        print(build, chro, NC_trans, gstart, gend)
+    return(build, chro, NC_trans, gstart, gend)
+
 
 ####VF CODE###
         # Not sure if the differences between builds could be included here or in a different function. 
@@ -217,20 +219,59 @@ def initial_tests():
 Tests run at the end of the program
 """
 def final_tests():
-    
+
     """ Checking for xml format """
-    if schema != "1.9":  
+    if schema != "1.9":
         print ("""lrgext supports LRG xmls built using schema 1.9. Please be aware of data incongruencies""")
-    
+
     # Check the strand direction and warn if in reverse.
     # Use LRG_571 for a forward strand example
     if str_dir == "-":
         print ("Note: reverse strand!")
-    
+
     return
 
 
 def builds():
+
+    for annotation in up_anno[1].findall('mapping'):
+        build = annotation.get('coord_system')
+
+        # collect info on build 37
+        if build.startswith('GRCh37'):
+            print("This is build 37")
+            NC_trans = annotation.get('other_id')
+            gstart = annotation.get('other_start')
+            gend = annotation.get('other_end')
+
+            # determine start and end of LRG
+            for lrg in up_anno[1].findall('mapping/mapping_span'):
+                lrg_start = lrg.get('lrg_start')
+                lrg_end = lrg.get('lrg_end')
+
+           # determine LRG size for build
+# currently not working           lrg_size = lrg_end - lrg_start
+
+            print(build, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size)
+
+        # otherwise collect info on build 38
+        elif build.startswith('GRCh38'):
+            print("This is build 38")
+            NC_trans = annotation.get('other_id')
+            gstart = annotation.get('other_start')
+            gend = annotation.get('other_end')
+
+            # determine start and end of LRG
+            for lrg in up_anno[1].findall('mapping/mapping_span'):
+                lrg_start = lrg.get('lrg_start')
+                lrg_end = lrg.get('lrg_end')
+
+            print(build, NC_trans, gstart, gend, lrg_start, lrg_end)
+
+        # if any build other than 37 or 38 is present, this script will need to be modified
+        else:
+            print("This is not a standard build. Please check .xml file")
+            break
 
 #### VF's code
     # if transcript number differ between builds 37 and 38:
@@ -244,13 +285,12 @@ def builds():
 initial_tests()   # 1
 (root, up_anno) = handle_xml(data)  # 2
 (schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root) # 3
-(coord, chro, NC_trans, gstart, gend) = get_build_info(up_anno) # 4
+(build, chro, NC_trans, gstart, gend) = get_build_info(up_anno) # 4
 (gene, str_dir) = get_gen_data(data) # 5
 (list_all_coord, list4bed) = get_exon_data(data, gstart, gend, chro, str_dir) # 6
 output2file(list_all_coord, list4bed) # 7
 disclaimer() # 8
 final_tests() # 9
-
+builds()
 
 ### End of Main ###
-
