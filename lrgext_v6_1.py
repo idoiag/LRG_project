@@ -211,7 +211,7 @@ def initial_tests():
         print ("Data does not exist")
 
 #### VF's code ####
-    # check file is in xml format. If not, return error message "Not an xml file"
+    # check file is in xml format. If not, return error message "Not an xml file" - this is automatically handled by ElementTree
     # add try, except to close program if no LRG exists
     return
 
@@ -252,7 +252,7 @@ def builds():
                 else:
                    lrg_size_37 = (1+(lrg_start - lrg_end))
 
-            print(build, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37)
+            print(build, NC_trans, gstart, gend, lrg_start, lrg_end)
 
         # otherwise collect info on build 38
         elif build.startswith('GRCh38'):
@@ -269,7 +269,7 @@ def builds():
                 else:
                    lrg_size_38 = (1+(lrg_start - lrg_end))
 
-            print(build, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_38)
+            print(build, NC_trans, gstart, gend, lrg_start, lrg_end)
 
         # if any build other than 37 or 38 is present, this script will need to be modified
         else:
