@@ -239,39 +239,47 @@ def builds():
 
         # collect info on build 37
         if build.startswith('GRCh37'):
-            print("This is build 37")
             NC_trans = annotation.get('other_id')
             gstart = annotation.get('other_start')
             gend = annotation.get('other_end')
 
             # determine start and end of LRG
             for lrg in up_anno[1].findall('mapping/mapping_span'):
-                lrg_start = lrg.get('lrg_start')
-                lrg_end = lrg.get('lrg_end')
+                lrg_start = int(lrg.get('lrg_start'))
+                lrg_end = int(lrg.get('lrg_end'))
+                if lrg_end > lrg_start:
+                   lrg_size_37 = (1+(lrg_end - lrg_start))
+                else:
+                   lrg_size_37 = (1+(lrg_start - lrg_end))
 
-           # determine LRG size for build
-# currently not working           lrg_size = lrg_end - lrg_start
-
-            print(build, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size)
+            print(build, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37)
 
         # otherwise collect info on build 38
         elif build.startswith('GRCh38'):
-            print("This is build 38")
             NC_trans = annotation.get('other_id')
             gstart = annotation.get('other_start')
             gend = annotation.get('other_end')
 
             # determine start and end of LRG
             for lrg in up_anno[1].findall('mapping/mapping_span'):
-                lrg_start = lrg.get('lrg_start')
-                lrg_end = lrg.get('lrg_end')
+                lrg_start = int(lrg.get('lrg_start'))
+                lrg_end = int(lrg.get('lrg_end'))
+                if lrg_end > lrg_start:
+                   lrg_size_38 = (1+(lrg_end - lrg_start))
+                else:
+                   lrg_size_38 = (1+(lrg_start - lrg_end))
 
-            print(build, NC_trans, gstart, gend, lrg_start, lrg_end)
+            print(build, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_38)
 
         # if any build other than 37 or 38 is present, this script will need to be modified
         else:
-            print("This is not a standard build. Please check .xml file")
+            print("This is not an expected Human Reference Genome Build. Please check .xml file")
             break
+    if lrg_size_38 == lrg_size_37:
+        print("LRG size is the same between GRCh37 and GRCh38")
+    else:
+        print("WARNING: LRG sizes differ between GRCh37 and GRCh38")
+
 
 #### VF's code
     # if transcript number differ between builds 37 and 38:
