@@ -21,8 +21,8 @@ Capturing file and initializing variables
 
 script = sys.argv[0]
 LRG = sys.argv[1]
-#LRG = 'LRG_62' for example
-path = './LRGs/'
+LRG = 'LRG_214' 
+# path = './LRGs/'
 data = path + LRG + '.xml'
 # Add error checking to detect if LRG doesn't exist
 #    print("No .xml file exists for the name specified")
@@ -156,7 +156,8 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
 
     # Preparing lists to be print in columns
     for group in list_all_coord:
-        print ("\t".join(group) + "\n")
+        pass
+        # print ("\t".join(group) + "\n")
     return (list_all_coord, list4bed)
 
 """
@@ -195,7 +196,7 @@ def output2file(list_all_coord, list4bed):
 
 def disclaimer():
 # This disclaimer is in triple quotes therefore won't print - is this because i needs to be in double quotes or because it needs to be amended first?
-    print ("""Please cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, 
+    print ("""\nPlease cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, 
     Faculty of Medicine and Human Sciences, The University of Manchester.' or successor 
     references as defined by the authors.\n""")
     return
@@ -227,7 +228,7 @@ def final_tests():
     # Check the strand direction and warn if in reverse.
     # Use LRG_571 for a forward strand example
     if str_dir == "-":
-        print ("Note: reverse strand!")
+        print ("Note: reverse strand!\n")
 
     return
 
@@ -297,8 +298,8 @@ initial_tests()   # 1
 (gene, str_dir) = get_gen_data(data) # 5
 (list_all_coord, list4bed) = get_exon_data(data, gstart, gend, chro, str_dir) # 6
 output2file(list_all_coord, list4bed) # 7
-disclaimer() # 8
 final_tests() # 9
 builds()
+disclaimer() # 8
 
 ### End of Main ###
