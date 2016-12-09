@@ -103,6 +103,20 @@ Function: final_tests()
 
 Note: Refer to Developers file for further information
 
+Information:
+
+Bed file: 
+chrom - The name of the chromosome (e.g. chr3, chrY, chr2_random) or scaffold (e.g. scaffold10671).
+chromStart - The starting position of the feature in the chromosome or scaffold. The first base in a chromosome is numbered 0.
+chromEnd - The ending position of the feature in the chromosome or scaffold. The chromEnd base is not included in the display 
+of the feature. For example, the first 100 bases of a chromosome are defined as chromStart=0, chromEnd=100, and span the bases
+numbered 0-99.
+
+Source: https://genome.ucsc.edu/FAQ/FAQformat#format1
+
+chr22 1000 5000 
+chr22 2000 6000
+
 #### SCOPE /VF In Progress/
 This software has been tested with a sample of .xml files obtained from the LRG website. 
 We have tried to include the main genes analysed in diagnostic labstories, such as:
