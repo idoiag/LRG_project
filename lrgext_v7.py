@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 # Authors: Idoia Gomez-Paramio and Verity Fryer 2016
-# Usage: python lrgext_v6_1.py LRG_ID (e.g. LRG_292)
+# Usage: python lrgext_v7.py enter_gene (e.g. BRCA1, maybe be uppercase or lowercase or a combination of both)
 
-import xml.etree.ElementTree as ET
-import os.path
-import sys
-
+import xml.etree.ElementTree as ET, os.path, sys, csv
 
 """
 lrgext extracts build, gene, transcript, exon information from a file in LRG format
@@ -20,12 +17,38 @@ Capturing file and initializing variables
 """
 
 script = sys.argv[0]
-LRG = sys.argv[1]
-# LRG = 'LRG_214' 
+#LRG = sys.argv[1]
+#LRG = 'LRG_214' 
 path = './LRGs/'
-data = path + LRG + '.xml'
-# Add error checking to detect if LRG doesn't exist
-#    print("No .xml file exists for the name specified")
+
+enter_gene = sys.argv[1].upper()
+
+with open('gene_lrg_lst.csv','w') as f:
+    csvfileWriter = csv.writer(f)
+    for filename in os.listdir(path):
+        if not filename.endswith('.xml'): continue
+        fullname = os.path.join(path, filename)
+        tree = ET.parse(fullname)
+        root = tree.getroot()
+        gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
+
+        csvfileWriter.writerow([gene, filename])
+    f.close()
+
+with open('gene_lrg_lst.csv','r') as f:
+    csvfileReader = csv.reader(f)
+    for row in csvfileReader:
+        found = 'No'
+        if enter_gene in row[0]:
+           found = 'Yes'
+           LRG_xml = row[1] 
+#           print(row[1])
+           break
+    if found == 'No':
+        print("No LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org")
+
+#data = path + LRG + '.xml'
+data = path + LRG_xml
 
 #A further improvement would be the addtion of get -ops
 #https://www.tutorialspoint.com/python/python_command_line_arguments.htm
@@ -85,7 +108,7 @@ def get_background(root):
                 strand_cs = coordinates.get('strand')
 
         print ("Schema version: " + schema)
-        print ("LRG  ID: " + lrg_id + "\n", hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
+        print ("LRG ID: " + lrg_id + "\n", "HGNC ID: " + hgnc_id + "\n", seq_source, transcript, cs, start_cs, end_cs, strand_cs)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
 """
