@@ -37,6 +37,18 @@ with open('gene_lrg_lst.csv','w') as f:
         csvfileWriter.writerow([gene, filename])
     f.close()
 
+##### TESTING #####
+
+def initial_tests():
+    """ Run initial tests to check the software and file before execution""" 
+    if (os.path.isfile(data) == False) :
+        print ("Data is not a readable file")
+
+    if (os.path.exists(data) == False):
+        print ("Data does not exist")
+
+    return
+
 # read the .csv file of LRGs to check an LRG exists for the gene name entered
 with open('gene_lrg_lst.csv','r') as f:
     csvfileReader = csv.reader(f)
@@ -111,7 +123,7 @@ def get_background(root):
                 strand_cs = coordinates.get('strand')
 
         print ("Schema version: " + schema)
-        print ("LRG ID: " + lrg_id + "\n", "Transcript: ")
+        print ("LRG ID: " + lrg_id)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
 """
@@ -131,7 +143,7 @@ def get_build_info(up_anno):
 
 
 ####VF CODE###
-        # Not sure if the differences between builds could be included here or in a different function. 
+        # Not sure if the differences between builds could be included here or in a different function.
         # Also to capture if difference in sequences occur in the intron/exon
 ###
 
@@ -148,7 +160,7 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
         trans_number += 1
 
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
-        print( "Transcript number: ", trans_number, 'Exon count: ', len(exon_lst))
+        print("Transcript number: ", trans_number, 'Exon count: ', len(exon_lst))
 
         for exons in transcripts.findall('exon'):
             ex_num = exons.get('label')
@@ -191,9 +203,9 @@ Creating .csv, a comma separated text file with exon, transcripts, protein coord
 
 def output2file(list_all_coord, list4bed):
     # Open file in read/write format. If one doesn't exist, it  will create a new one
-    db = open("./Outputs/LRG_coord.txt","w")
-    db_csv = open("./Outputs/LRG_coord.csv","w")
-    bed = open ("./Outputs/LRG_bed", "w")
+    db = open("./Outputs/" + lrg_id + "_" + enter_gene + "_coord" + ".txt","w")
+    db_csv = open("./Outputs/" + lrg_id + "_" + enter_gene + "_coord" + ".csv","w")
+    bed = open ("./Outputs/" + lrg_id + "_" + enter_gene + "_bed", "w")
 
     # Add headers to files
     headings = ["transcript","exon", "ex_start", "ex_end", "tr_start", "tr_end", "pt_start", "pt_end"]
@@ -221,26 +233,11 @@ def output2file(list_all_coord, list4bed):
     return
 
 def disclaimer():
-# This disclaimer is in triple quotes therefore won't print - is this because i needs to be in double quotes or because it needs to be amended first?
     print ("""\nPlease cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, 
     Faculty of Medicine and Human Sciences, The University of Manchester.' or successor 
     references as defined by the authors.\n""")
     return
 
-##### TESTING #####
-
-def initial_tests():
-    """ Run initial tests to check the software and file before execution""" 
-    if (os.path.isfile(data) == False) :
-        print ("Data is not a readable file")
-
-    if (os.path.exists(data) == False):
-        print ("Data does not exist")
-
-#### VF's code ####
-    # check file is in xml format. If not, return error message "Not an xml file" - this is automatically handled by ElementTree
-    # add try, except to close program if no LRG exists
-    return
 
 """
 Tests run at the end of the program
@@ -250,6 +247,7 @@ def final_tests():
     """ Checking for xml format """
     if schema != "1.9":
         print ("""lrgext supports LRG xmls built using schema 1.9. Please be aware of data incongruencies""")
+
 
     # Check the strand direction and warn if in reverse.
     # Use LRG_571 for a forward strand example
