@@ -5,14 +5,16 @@
 #### BACKGROUND /VF, IP/
 /Examples: 
 VF - Why LRGs are important, use, challenges
-VF - How can an xml parser help the diagnostic service,
+VF - How can an xml parser help the diagnostic service
+LRG records are available online at www.lrg-sequence-org. These records contains a lot of data about each LRG and it is useful for the bioinformatician to be able to access these records and extract a subset of data that they and other clinical scientists within their department may find useful. Developing an xml parser that deals specifically with LRG records means that the exact data need can be extracted very quickly and consistantly each time the request is made.
+Many laboratories currently store the LRG xml files on a local folder (which will decrease the processing time of the script slightly as it won't have to send requests via the internet). This method is also more secure as all the data processing can occur behind the NHS firewall. The disadvantage of this system is that the stored .xml files may not be of the most up-to-date information on the website, but this can be minimised by implemeting a regular routine for pulling .xml files from the site. The script itself compiles a list of all LRG xml files in the LRGs directory at the start of the script each time it is run therefore the script will be using the most up-to-date records that have been saved within the LRGs directory. This means that if additional or amended xml files are added to the directory, the script will use these and it won't fall over because it doesn't recognise a new LRG name or if one is missing that had previously been processed.
 VF - How can bioinformaticians help > great idea to have a parser
 Etc. /
 
 
 #### USAGE/INSTALLATION /IGP, IP, pending on features being added/
 
-lrgext does not require installation and can be run from the command line by providing the LRG name as an argument (default extension is .xml).
+lrgext does not require installation and can be run from the command line by providing the gene name as an argument (default extension is .xml). This script was originally using the LRG name as the argument, but as most users of the script will be most likely to know the gene name before the LRG, this script can be used to find out a) if an LRG exists (and has been saved within the LRGs folder) and b) what the LRG id is for a given gene name.
 lrgext will extract build, gene, transcript, exon information from a file in LRG format 
 producing different output files:
     - cvs file: provides the exon, transcript and protein coordinates separated by comma /IGP/
@@ -37,7 +39,7 @@ Testing is important because bla, bla... / 2-3 lines, VF/
 /This is a list of tests we initally suggested. We also proposed to use BRCA as a control. 1-3 lines to describe each
 function, IGP  + VF as required/
 
-	1. LRG_ID: check if the given gene has an allocated LRG ID. /VF In Progress/
+	1. LRG_ID: check if the given gene has an allocated LRG ID. /VF, Done
 	2. Check the LRG exists and is a readable file. /IGP, DONE /
 	3. Check that the xml version format (schema) is right: IGP, Done
 	4. Strand: check the direction of the strand. /IGP, Done/
@@ -54,7 +56,7 @@ Parsing Features:
 /Describe the parsing functions, 1-3 lines per function, IGP + VF as required/
 
 3.Files generation:
-Results need to be gathered and collected in a way that allows it furher use by other professionals. This could be in 
+Results need to be gathered and collected in a way that allows it further use by other professionals. This could be in 
 a human readable way  (e.g. tab separated document, build mapper) or in a script readable way (e.g. bed and cvs file).
 ... bla, bla /VF/
 
@@ -126,7 +128,7 @@ We have tried to include the main genes analysed in diagnostic labstories, such 
 The following genes and their corresponding LRG files were used during testing for reasons outlined below.
 LRG_292 = BRCA1: Decisive in the diagnosis of Breast cancer. Used to test script handling of genes that occur on the reverse strand.
 LRG_1 = COL1A1:
-LRG_9 = SDHD: Used to test script handling of a record that is currently 'Pending Approval' therefore the record is not public yet and subject to change.
+LRG_9 = SDHD: Used to test script handling of a record that is currently 'Pending Approval' therefore the record is not public yet and subject to change. This was not possible to test as the .xml record for LRGs that are 'Pending Approval' do not contain this phrase within the LRG therefore the only way to know if the LRG is pending approval or has been accepted is to look on the website.
 LRG_214 = NF1: Used to test handling of more than one transcript contained within an LRG file.
 
 / LRG_214 (Gene NF1) Two transcripts LRG_292 (Gene BRCA1) Reverse strand/

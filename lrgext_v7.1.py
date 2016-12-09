@@ -93,9 +93,10 @@ def get_gen_data(data):
         # marking forward strand as "+" and negative as "-"
         if (str_dir == "1"):
             str_dir = "+"
+            print("\nN.B. This LRG is on the FORWARD strand\n")
         else:
             str_dir = "-"
-        print (str_dir)
+            print("\nN.B. This LRG is on the REVERSE strand\n")
 
     return (gene, str_dir)
 
