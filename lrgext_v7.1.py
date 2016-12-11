@@ -42,10 +42,10 @@ with open('gene_lrg_lst.csv','w') as f:
 def initial_tests():
     """ Run initial tests to check the software and file before execution""" 
     if (os.path.isfile(data) == False) :
-        print ("Data is not a readable file")
+        print ("\nData is not a readable file")
 
     if (os.path.exists(data) == False):
-        print ("Data does not exist")
+        print ("\nData does not exist")
 
     return
 
@@ -57,11 +57,11 @@ with open('gene_lrg_lst.csv','r') as f:
         found = 'No'
         if enter_gene in row[0]:
             found = 'Yes'
-            LRG_xml = row[1] 
+            LRG_xml = row[1]
             # if the gene name entered is in the first entry for a row, exit the loop
             break
     if found == 'No':
-        print("No LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org")
+        print("\nNo LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org")
 
 data = path + LRG_xml
 
@@ -84,7 +84,7 @@ def get_gen_data(data):
 
     # Extracting name of gene
     gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
-    print('Gene: ', gene)
+    print('\nGene: ', gene)
 
     # Determining the strand direction(e.g. 517 is "+")
     for annotation in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span'):
@@ -93,10 +93,8 @@ def get_gen_data(data):
         # marking forward strand as "+" and negative as "-"
         if (str_dir == "1"):
             str_dir = "+"
-            print("\nN.B. This LRG is on the FORWARD strand\n")
         else:
             str_dir = "-"
-            print("\nN.B. This LRG is on the REVERSE strand\n")
 
     return (gene, str_dir)
 
@@ -123,8 +121,8 @@ def get_background(root):
                 end_cs = coordinates.get('end')
                 strand_cs = coordinates.get('strand')
 
-        print ("Schema version: " + schema)
-        print ("LRG ID: " + lrg_id)
+        print ("\nSchema version: " + schema)
+        print ("\nLRG ID: " + lrg_id)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
 """
@@ -136,17 +134,55 @@ def get_build_info(up_anno):
     for annotation in up_anno[1].findall('mapping'):
         build = annotation.get('coord_system')
         chro = annotation.get('other_name')
-        NC_trans = annotation.get('other_id')
-        gstart = annotation.get('other_start')
-        gend = annotation.get('other_end')
-        print(build, chro, NC_trans, gstart, gend)
-    return(build, chro, NC_trans, gstart, gend)
 
+        # collect info on build 37
+        if build.startswith('GRCh37'):
+            NC_trans = annotation.get('other_id')
+            gstart = annotation.get('other_start')
+            gend = annotation.get('other_end')
 
-####VF CODE###
-        # Not sure if the differences between builds could be included here or in a different function.
-        # Also to capture if difference in sequences occur in the intron/exon
-###
+            # determine start and end of LRG
+            for lrg in up_anno[1].findall('mapping/mapping_span'):
+                lrg_start = int(lrg.get('lrg_start'))
+                lrg_end = int(lrg.get('lrg_end'))
+                if lrg_end > lrg_start:
+                   lrg_size_37 = (1+(lrg_end - lrg_start))
+                else:
+                   lrg_size_37 = (1+(lrg_start - lrg_end))
+
+            print('\n' + build, NC_trans, gstart, gend, lrg_start, lrg_end)
+
+        # otherwise collect info on build 38
+        elif build.startswith('GRCh38'):
+            NC_trans = annotation.get('other_id')
+            gstart = annotation.get('other_start')
+            gend = annotation.get('other_end')
+
+            # determine start and end of LRG
+            for lrg in up_anno[1].findall('mapping/mapping_span'):
+                lrg_start = int(lrg.get('lrg_start'))
+                lrg_end = int(lrg.get('lrg_end'))
+                if lrg_end > lrg_start:
+                   lrg_size_38 = (1+(lrg_end - lrg_start))
+                else:
+                   lrg_size_38 = (1+(lrg_start - lrg_end))
+
+            print('\n' + build, NC_trans, gstart, gend, lrg_start, lrg_end)
+
+        # if any build other than 37 or 38 is present, this script will need to be modified
+        else:
+            print("\nThis is not an expected Human Reference Genome Build. Please check .xml file")
+            break
+    if lrg_size_38 == lrg_size_37:
+        print("\nLRG size is the same between GRCh37 and GRCh38")
+    else:
+        print("WARNING: LRG sizes differ between GRCh37 and GRCh38")
+    return(build, chro, NC_trans, gstart, gend, lrg_start, lrg_end)
+
+#def is_int(gstart, gend):
+#    assert str(gstart).isdigit()
+#    assert str(gend).isdigit()
+#    return(gstart_int,gend_int)
 
 """
 Get information about the exon for the different transcripts, including number of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein
@@ -161,7 +197,8 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
         trans_number += 1
 
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
-        print("Transcript number: ", trans_number, 'Exon count: ', len(exon_lst))
+        print("\nNumber of transcripts: ", trans_number)
+        print('\nExon count: ', len(exon_lst))
 
         for exons in transcripts.findall('exon'):
             ex_num = exons.get('label')
@@ -187,13 +224,13 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
                     g_end_ex = end_ex + gend
 
                 else:
-                    print ("Problem extracting exon information")
+                    print ("\nProblem extracting exon information")
 
             # Create list of coordinates
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt]  )
 
-    # Preparing lists to be print in columns
+    # Preparing lists to be printed in columns
     for group in list_all_coord:
         pass
         # print ("\t".join(group) + "\n")
@@ -207,34 +244,45 @@ def output2file(list_all_coord, list4bed):
     db = open("./Outputs/" + lrg_id + "_" + enter_gene + "_coord" + ".txt","w")
     db_csv = open("./Outputs/" + lrg_id + "_" + enter_gene + "_coord" + ".csv","w")
     bed = open ("./Outputs/" + lrg_id + "_" + enter_gene + "_bed", "w")
+#    db_build = open("./Outputs/" + lrg_id + "_" + enter_gene + "_build" + ".txt","w")
 
     # Add headers to files
-    headings = ["transcript","exon", "ex_start", "ex_end", "tr_start", "tr_end", "pt_start", "pt_end"]
-    bed_headings = ["chr", "start", "end", "strand", "transcript" ]
+    headings = ["Transcript","Exon", "Exon_start", "Exon_end", "Transcipt_start", "Transcript_end", "Protein_start", "Protein_end"]
+    bed_headings = ["Chromosome", "Start", "End", "Strand", "Transcript" ]
+#    build_headings = ["Build", "LRG_start", "LRG_end"]
 
     # Writing tab separated text file
     db.write("\t".join(headings) + "\n") # writing headings
     for group in list_all_coord:
         db.write ("\t".join(group) + "\n") # writing coordinates
 
-    # Writing csv file
+    # Writing comma-seperated values (.csv) file
     db_csv.write(",".join(headings) + "\n") # writing headings
     for group in list_all_coord:
         db_csv.write (",".join(group) + "\n") # writing coordinates
 
-    # Writing bed file
+    # Writing tab-delimited .bed file
     bed.write("\t".join(bed_headings) + "\n") # writing headings
     for group in list4bed:
         bed.write ("\t".join(group) + "\n")
+
+    # Writing build tab-delimited text file
+#    db_build.write("\t".join(build_headings) + "\n")
+#    for group in def_builds:
+#        db_build.write("\t".join(grou) + "\n")
 
     # Closing files
     db.close()
     db_csv.close()
     bed.close()
+#    db_build.close()
+    # Print to screen creation of output files has been successful
+    print ("\nOutput files have been saved in /Outputs!")
+
     return
 
 def disclaimer():
-    print ("""\nPlease cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, 
+    print ("""\nPlease cite this software as: Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, 
     Faculty of Medicine and Human Sciences, The University of Manchester.' or successor 
     references as defined by the authors.\n""")
     return
@@ -247,69 +295,14 @@ def final_tests():
 
     """ Checking for xml format """
     if schema != "1.9":
-        print ("""lrgext supports LRG xmls built using schema 1.9. Please be aware of data incongruencies""")
-
+        print ('\nlrgext supports LRG xmls built using schema 1.9. Please be aware of data incongruencies')
 
     # Check the strand direction and warn if in reverse.
     # Use LRG_571 for a forward strand example
     if str_dir == "-":
-        print ("Note: reverse strand!\n")
-
-    return
-
-
-def builds():
-
-    for annotation in up_anno[1].findall('mapping'):
-        build = annotation.get('coord_system')
-
-        # collect info on build 37
-        if build.startswith('GRCh37'):
-            NC_trans = annotation.get('other_id')
-            gstart = annotation.get('other_start')
-            gend = annotation.get('other_end')
-
-            # determine start and end of LRG
-            for lrg in up_anno[1].findall('mapping/mapping_span'):
-                lrg_start = int(lrg.get('lrg_start'))
-                lrg_end = int(lrg.get('lrg_end'))
-                if lrg_end > lrg_start:
-                   lrg_size_37 = (1+(lrg_end - lrg_start))
-                else:
-                   lrg_size_37 = (1+(lrg_start - lrg_end))
-
-            print(build, NC_trans, gstart, gend, lrg_start, lrg_end)
-
-        # otherwise collect info on build 38
-        elif build.startswith('GRCh38'):
-            NC_trans = annotation.get('other_id')
-            gstart = annotation.get('other_start')
-            gend = annotation.get('other_end')
-
-            # determine start and end of LRG
-            for lrg in up_anno[1].findall('mapping/mapping_span'):
-                lrg_start = int(lrg.get('lrg_start'))
-                lrg_end = int(lrg.get('lrg_end'))
-                if lrg_end > lrg_start:
-                   lrg_size_38 = (1+(lrg_end - lrg_start))
-                else:
-                   lrg_size_38 = (1+(lrg_start - lrg_end))
-
-            print(build, NC_trans, gstart, gend, lrg_start, lrg_end)
-
-        # if any build other than 37 or 38 is present, this script will need to be modified
-        else:
-            print("This is not an expected Human Reference Genome Build. Please check .xml file")
-            break
-    if lrg_size_38 == lrg_size_37:
-        print("LRG size is the same between GRCh37 and GRCh38")
-    else:
-        print("WARNING: LRG sizes differ between GRCh37 and GRCh38")
-
-
-#### VF's code
-    # if transcript number differ between builds 37 and 38:
-    # print("Do transcripts match between builds? ", True/False)
+        print("\nN.B. This LRG is on the REVERSE strand")
+    elif str_dir == '+':
+        print("\nN.B. This LRG is on the FORWARD strand")
     return
 
 ### End of testing ###
@@ -317,14 +310,14 @@ def builds():
 #### MAIN information ####
 
 initial_tests()   # 1
+#(gstart_int,gend_int) = is_int(gstart,gend)
 (root, up_anno) = handle_xml(data)  # 2
 (schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root) # 3
-(build, chro, NC_trans, gstart, gend) = get_build_info(up_anno) # 4
-(gene, str_dir) = get_gen_data(data) # 5
+(gene, str_dir) = get_gen_data(data) # 4
+(build, chro, NC_trans, gstart, gend, lrg_start, lrg_end) = get_build_info(up_anno) # 5
 (list_all_coord, list4bed) = get_exon_data(data, gstart, gend, chro, str_dir) # 6
 output2file(list_all_coord, list4bed) # 7
-final_tests() # 9
-builds()
-disclaimer() # 8
+final_tests() # 8
+disclaimer() # 9
 
 ### End of Main ###
