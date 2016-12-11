@@ -43,7 +43,7 @@ function, IGP  + VF as required/
 	2. Check the LRG exists and is a readable file. /IGP, DONE /
 	3. Check that the xml version format (schema) is right: IGP, Done
 	4. Strand: check the direction of the strand. /IGP, Done/
-	5. Build_number: check the number of build provided. If more than one, check that coordinates are diff. /VF In Progress/
+	5. Build_number: check the number of build provided. If more than one, check that coordinates are diff. /VF,Done/
 	6. Build_coor: check that the start and end of the coordinate for each build are different /VF In Progress/
 	7. Data_consistency: check that coordinates extracted are numbers /IGP/VF ?/
 	8. Exon_coor: check that exons do not overlap /IGP/VF ?/
@@ -58,7 +58,23 @@ Parsing Features:
 3.Files generation:
 Results need to be gathered and collected in a way that allows it further use by other professionals. This could be in 
 a human readable way  (e.g. tab separated document, build mapper) or in a script readable way (e.g. bed and cvs file).
-... bla, bla /VF/
+... bla, bla 
+Information:
+
+Bed file: 
+chrom - The name of the chromosome (e.g. chr3, chrY, chr2_random) or scaffold (e.g. scaffold10671).
+chromStart - The starting position of the feature in the chromosome or scaffold. The first base in a chromosome is numbered 0.
+chromEnd - The ending position of the feature in the chromosome or scaffold. The chromEnd base is not included in the display 
+of the feature. For example, the first 100 bases of a chromosome are defined as chromStart=0, chromEnd=100, and span the bases
+numbered 0-99.
+
+Source: https://genome.ucsc.edu/FAQ/FAQformat#format1
+
+chr22 1000 5000 
+chr22 2000 6000
+
+
+/VF/
 
 File generation features:
 /Describe the file generation functions, 1-3 lines per function, IGP + VF as required/
@@ -105,23 +121,12 @@ Function: final_tests()
 
 Note: Refer to Developers file for further information
 
-Information:
-
-Bed file: 
-chrom - The name of the chromosome (e.g. chr3, chrY, chr2_random) or scaffold (e.g. scaffold10671).
-chromStart - The starting position of the feature in the chromosome or scaffold. The first base in a chromosome is numbered 0.
-chromEnd - The ending position of the feature in the chromosome or scaffold. The chromEnd base is not included in the display 
-of the feature. For example, the first 100 bases of a chromosome are defined as chromStart=0, chromEnd=100, and span the bases
-numbered 0-99.
-
-Source: https://genome.ucsc.edu/FAQ/FAQformat#format1
-
-chr22 1000 5000 
-chr22 2000 6000
 
 #### SCOPE /VF In Progress/
-This software has been tested with a sample of .xml files obtained from the LRG website. 
-We have tried to include the main genes analysed in diagnostic labstories, such as:
+This software has been tested in Windows and Linux  with a sample of .xml files obtained from the LRG website. This sample contain genes with one or more builds and/or transcripts. 
+
+
+Genes were selected based on their clinical utility .... the main genes analysed in diagnostic labstories, such as:
 
 /Here we include a list of the genes tested, the gene name and its main impact/
 
@@ -133,7 +138,7 @@ LRG_214 = NF1: Used to test handling of more than one transcript contained withi
 
 / LRG_214 (Gene NF1) Two transcripts LRG_292 (Gene BRCA1) Reverse strand/
 
-#### VERSIONING /IGP, Done/
+#### VERSIONING /VF, IP/
 
 - Feature added: Extracting background information about the gene: v1
 - Feature: Making the code modular: v2
@@ -149,6 +154,10 @@ LRG_214 = NF1: Used to test handling of more than one transcript contained withi
     (e.g. LRG_292 and LRG 62). Comments revised, added and updated v.5.3 
 - Feature: Addition of command line arguments. Now ".xml" file can be provided from the command line v.6
 - Upgrade: Addition of test for strand direction within function "final_tests" v.6.1
+- Feature: v.7 - VF, IP
+- Improvement: v.7.1 VF, IP
+
+
 
 #### DISCLAIMER /IGP, Done/
 Please cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, Faculty of Medicine and Human Sciences, The University of Manchester.' or successor references as defined by the authors.

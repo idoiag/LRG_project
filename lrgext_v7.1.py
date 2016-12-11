@@ -8,6 +8,7 @@ producing different output files:
     - .csv file
     - tab separated .txt file
     - bed file
+    ###### TEST #####
 """
 
 import xml.etree.ElementTree as ET, os.path, sys, csv
