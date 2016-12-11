@@ -19,7 +19,6 @@ Capturing file and initializing variables
 
 script = sys.argv[0]
 #LRG = sys.argv[1]
-#LRG = 'LRG_214' 
 path = './LRGs/'
 
 enter_gene = sys.argv[1].upper()
@@ -236,6 +235,19 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
         # print ("\t".join(group) + "\n")
     return (list_all_coord, list4bed)
 
+
+def diff_data(data):
+    for diff in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span/diff'):
+        diff_type = diff.get('type')
+        diff_lrg_start = diff.get('lrg_start')
+        diff_lrg_end = diff.get('lrg_end')
+        diff_gen_start = diff.get('other_start')
+        diff_gen_end = diff.get('other_end')
+        lrg_seq_base = diff.get('lrg_sequence')
+        other_seq_base = diff.get('other_sequence')
+        print(diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base)
+    return(diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base)
+
 """
 Creating .csv, a comma separated text file with exon, transcripts, protein coordinates and a bed file"""
 
@@ -316,6 +328,7 @@ initial_tests()   # 1
 (gene, str_dir) = get_gen_data(data) # 4
 (build, chro, NC_trans, gstart, gend, lrg_start, lrg_end) = get_build_info(up_anno) # 5
 (list_all_coord, list4bed) = get_exon_data(data, gstart, gend, chro, str_dir) # 6
+(diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base) = diff_data(data)
 output2file(list_all_coord, list4bed) # 7
 final_tests() # 8
 disclaimer() # 9
