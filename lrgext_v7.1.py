@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Authors: Idoia Gomez-Paramio and Verity Fryer 2016
-# Usage: python lrgext_v7.py enter_gene (e.g. BRCA1, maybe be uppercase or lowercase or a combination of both)
+# Usage: python lrgext_v7.1.py enter_gene (e.g. BRCA1, maybe be uppercase or lowercase or a combination of both)
 
 """
 lrgext extracts build, gene, transcript, exon information from a file in LRG format
@@ -124,10 +124,9 @@ def get_background(root):
         print ("\nLRG ID: " + lrg_id)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
-"""
-Get build information, including coordinates, chromosome, transcript, genomic start and genomic end.
-It will provide "N/A", when protein coordinates are not available
-"""
+# Get build information, including coordinates, chromosome, transcript, genomic start and genomic end.
+# It will provide "N/A", when protein coordinates are not available
+
 def get_build_info(up_anno):
 
     for annotation in up_anno[1].findall('mapping'):
@@ -235,6 +234,7 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
         # print ("\t".join(group) + "\n")
     return (list_all_coord, list4bed)
 
+# Parse xml and retrieve data for all sequence differences between build 37 and 38
 
 def diff_data(data):
     for diff in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span/diff'):
