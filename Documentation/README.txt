@@ -2,19 +2,32 @@
 
 ##############  README ############
 
-#### BACKGROUND /VF, IP/
-/Examples: 
-VF - Why LRGs are important, use, challenges
-VF - How can an xml parser help the diagnostic service
-LRG records are available online at www.lrg-sequence-org. These records contains a lot of data about each LRG and it is useful for the bioinformatician to be able to access these records and extract a subset of data that they and other clinical scientists within their department may find useful. Developing an xml parser that deals specifically with LRG records means that the exact data need can be extracted very quickly and consistantly each time the request is made.
-Many laboratories currently store the LRG xml files on a local folder (which will decrease the processing time of the script slightly as it won't have to send requests via the internet). This method is also more secure as all the data processing can occur behind the NHS firewall. The disadvantage of this system is that the stored .xml files may not be of the most up-to-date information on the website, but this can be minimised by implemeting a regular routine for pulling .xml files from the site. The script itself compiles a list of all LRG xml files in the LRGs directory at the start of the script each time it is run therefore the script will be using the most up-to-date records that have been saved within the LRGs directory. This means that if additional or amended xml files are added to the directory, the script will use these and it won't fall over because it doesn't recognise a new LRG name or if one is missing that had previously been processed.
-VF - How can bioinformaticians help > great idea to have a parser
-Etc. /
+#### BACKGROUND /VF, Done/
+Research into variation within the human genome is being undertaken worldwide and is vastly improving our knowledge with regards to benign and disease-causing mutations at a rapid pace. However, this exponential increase in knowledge (in part due to the evoluation of next generation sequencing) is adding to the already complicated issues of standardising genomic co-ordinates and variation nomenclature. New reserach leads to better understanding of the genomic map, which in turn leads to alterations in numbering of bases, exon/intron boundaries and assessment of variation to find the 'most common' refernce genome. There now exists several genome assembly versions, each of which has slightly different numbering depending on the sequence being investigated. Therefore, when clinical reports are issued regarding any variants found, it is very important for the exact location of the the variant(s) to be clearly identified, the genome assembly, or 'build' and the transcript used identify the variant. This allows any further analysis (or indeed retrospective analysis) to be performed efficiently and accurately as the Scientist has all the rlelvant information to them. However, changes in builds and different transcipts used still causes confusion and it can take some time to unravel the nomenclature used between builds.
+ 
+Locus Reference Genomic sequences (LRGs) are used as a stable reference for naming variants within a gene and are offered as an alternative (and in the future it is hoped, the standard) method for naming variants. The advantage of the LRG reference system is that an LRG is created for each gene, and once it has been approved by experts for that specific gene in collboration with both EBI (European Bioinformatics Institute) and NCBI (National Center for Biotechnology Information), the numbering system will never change, eliminating the need for clinical reports to contain so much confusing information regarding builds and nomenclature and improving consistancy and quality of variant reporting. This will also mean that each report generated for a specific gene will always have the same LRG associated with it, which can be useful in many situations, including family investigations that may occur over several generations.
 
+LRG records are available online at www.lrg-sequence-org and can be downloaded and stored locally as an .xml file or FASTA file. LRG records contains a lot of data about each LRG and it is useful for the bioinformatician to be able to access these records and extract a subset of data that they and other clinical scientists within their department may find useful. Developing an xml parser that deals specifically with LRG records means that the exact data need can be extracted very quickly and consistantly each time the request is made.
+
+Extensible markup anguage (XML) is a method for transferring data between applications in a structured and standised format so that the data can be easily converted and read by the local language used (e.g. Python Dictionary of Java HashMap). The data is represented in a hierarchical tree structure and access can be gained to all branches of the tree (i.e. data in those branches) be navigating from the root to the desired branch/information via the 'nodes' in between.
+
+Many laboratories currently store the LRG xml files on a local folder (which will decrease the processing time of the script slightly as it won't have to send requests via the internet). This method is also more secure as all the data processing can occur behind the NHS firewall. The disadvantage of this system is that the stored .xml files may not be of the most up-to-date information on the website, but this can be minimised by implemeting a regular routine for pulling .xml files from the site. The script itself compiles a list of all LRG xml files in the LRGs directory at the start of the script each time it is run therefore the script will be using the most up-to-date records that have been saved within the LRGs directory. This means that if additional or amended xml files are added to the directory, the script will use these and it won't fall over because it doesn't recognise a new LRG name or if one is missing that had previously been processed.
 
 #### USAGE/INSTALLATION /IGP, IP, pending on features being added/
 
 lrgext does not require installation and can be run from the command line by providing the gene name as an argument (default extension is .xml). This script was originally using the LRG name as the argument, but as most users of the script will be most likely to know the gene name before the LRG, this script can be used to find out a) if an LRG exists (and has been saved within the LRGs folder) and b) what the LRG id is for a given gene name.
+
+The command line instruction to use this xml parser is:
+
+python script_name gene_name
+
+e.g. using script "lrgextv7.1.1.py" to parse an xml for the gene BRCA1 on the command line would be:
+
+python lrgextv7.1.1.py BRCA1
+
+N.B. the gene name is not case sensitive i.e. BRCA1, brca, bRCa1 and BrCA1 would all produce the same result as the script handles the gene_name entry and converts it all to uppercase where needed.
+
+
 lrgext will extract build, gene, transcript, exon information from a file in LRG format 
 producing different output files:
     - cvs file: provides the exon, transcript and protein coordinates separated by comma /IGP/
@@ -49,8 +62,8 @@ function, IGP  + VF as required/
 	8. Exon_coor: check that exons do not overlap /IGP/VF ?/
 	9. Exon_number: check that we get the right number of exons /IGP/VF?/
 	  
-2.Parsing:
-Parsing is important or whatever, bla, bla /2-3 lines, VF/
+2.Parsing: /VF, Done/
+The ability to be able to parse an xml file is an extremely useful skill for a bioinformatician to have as so much data is available now on the Internet that being able to accurately read that data is extremely important. This is especially true in the context of genetic testing due to the impact results can have on the lives of individuals and their families once tested. Parsing an xml file using a module such as ElementTree (which is available as a Python library) makes the process of extracting clinically useful information both efficent and consistant, as the xml files themselves are created according to a strictly defined format (called a 'schema'). Any xml record that uses tha same schema will have the same format therefore created a script to parse the LRG files should be used for any LRG available, without the need of developing a script for each gene.
 
 Parsing Features:
 /Describe the parsing functions, 1-3 lines per function, IGP + VF as required/

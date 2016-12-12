@@ -38,9 +38,9 @@ def create_repository_file():
             tree = ET.parse(fullname)
             root = tree.getroot()
             gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
-    
+
             csvfileWriter.writerow([gene, filename])
-            
+
         f.close()
     return
 
@@ -53,7 +53,7 @@ def initial_tests():
     If not, a warning will be displayed. 
     2nd. data consistency within the file will be checked.
     """ 
-    
+
     # Checking if file  exist and capture name of file 
     with open('gene_lrg_lst.csv','r') as f:
         csvfileReader = csv.reader(f)
@@ -65,19 +65,19 @@ def initial_tests():
                 LRG_xml = row[1]
                 # if the gene name entered is in the first entry for a row, exit the loop
                 break
-            
+
         if found == 'No':
             print("\nNo LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org")
 
     data = path + LRG_xml
-    
+
     # Check data consistency within file 
     if (os.path.isfile(data) == False) :
         print ("\nData is not a readable file")
 
     if (os.path.exists(data) == False):
         print ("\nData does not exist")
-        
+
     return (data, LRG_xml)
 
 
@@ -87,13 +87,13 @@ def initial_tests():
 #https://www.tutorialspoint.com/python/python_command_line_arguments.htm
 #getopt.getopt(LRG, -l:, [long_options])
 
-# Parsing .xml file with 'xml.etree.ElementTree' 
+# Parsing .xml file with 'xml.etree.ElementTree'
 
 def handle_xml(data):
-    """    
+    """
     Parse xml files
     """
-    
+
     tree = ET.parse(data)
     root = tree.getroot()
     up_anno = tree.getroot()[1]
@@ -153,8 +153,14 @@ def get_background(root):
 
 def get_build_info(up_anno):
     """
-    Get information about the Chromosomic build
+    Get information about the Genome Reference Consortium human (GRCh) build
     """
+
+    build_lst = up_anno[1].findall('mapping')
+    print('\nNumber of GRCh builds: ', len(build_lst))
+
+    build_data = []
+
     for annotation in up_anno[1].findall('mapping'):
         build = annotation.get('coord_system')
         chro = annotation.get('other_name')
@@ -170,11 +176,13 @@ def get_build_info(up_anno):
                 lrg_start = int(lrg.get('lrg_start'))
                 lrg_end = int(lrg.get('lrg_end'))
                 if lrg_end > lrg_start:
-                   lrg_size_37 = (1+(lrg_end - lrg_start))
+                   lrg_size = (1+(lrg_end - lrg_start))
+                   lrg_size_37 = lrg_size
                 else:
-                   lrg_size_37 = (1+(lrg_start - lrg_end))
+                   lrg_size = (1+(lrg_start - lrg_end))
+                   lrg_size_37 = lrg_size
 
-            print('\n' + build, NC_trans, gstart, gend, lrg_start, lrg_end)
+#            print('\n' + build, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size)
 
         # otherwise collect info on build 38
         elif build.startswith('GRCh38'):
@@ -187,21 +195,39 @@ def get_build_info(up_anno):
                 lrg_start = int(lrg.get('lrg_start'))
                 lrg_end = int(lrg.get('lrg_end'))
                 if lrg_end > lrg_start:
-                   lrg_size_38 = (1+(lrg_end - lrg_start))
+                   lrg_size = (1+(lrg_end - lrg_start))
+                   lrg_size_38 = lrg_size
                 else:
-                   lrg_size_38 = (1+(lrg_start - lrg_end))
+                   lrg_size = (1+(lrg_start - lrg_end))
+                   lrg_size_38 = lrg_size
 
-            print('\n' + build, NC_trans, gstart, gend, lrg_start, lrg_end)
+#            print('\n' + build, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size)
 
         # if any build other than 37 or 38 is present, this script will need to be modified
         else:
-            print("\nThis is not an expected Human Reference Genome Build. Please check .xml file")
-            break
+            build = annotation.get('coord_system')
+            chro = annotation.get('other_name')
+            NC_trans = annotation.get('other_id')
+            gstart = annotation.get('other_start')
+            gend = annotation.get('other_end')
+            lrg_start = int(lrg.get('lrg_start'))
+            lrg_end = int(lrg.get('lrg_end'))
+
+        # create list of variables to be exported to .txt file called build_data
+        build_data.append([build, chro, NC_trans, str(gstart), str(gend), str(lrg_start), str(lrg_end), str(lrg_size)])
+
+    # set data to be exported into columns
+    for group in build_data:
+        pass
+
+    return(build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size)
+
+#    return (build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size)
+
     if lrg_size_38 == lrg_size_37:
         print("\nLRG size is the same between GRCh37 and GRCh38")
     else:
         print("WARNING: LRG sizes differ between GRCh37 and GRCh38")
-    return(build, chro, NC_trans, gstart, gend, lrg_start, lrg_end)
 
 #def is_int(gstart, gend):
 #    assert str(gstart).isdigit()
@@ -211,7 +237,7 @@ def get_build_info(up_anno):
 
 def get_exon_data(data, gstart, gend, chro, str_dir):
     """
-    Get information about the exon for the different transcripts, including number 
+    Get information about the exon for the different transcripts, including number
     of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein
     """
     trans_number = 0
@@ -253,12 +279,12 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
 
             # Create list of coordinates
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
-            list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt]  )
+            list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt])
 
     # Preparing lists to be printed in columns
     for group in list_all_coord:
         pass
-        # print ("\t".join(group) + "\n")
+
     return (list_all_coord, list4bed)
 
 # Parse xml and retrieve data for all sequence differences between build 37 and 38
@@ -280,21 +306,23 @@ def diff_data(data):
 
 
 
-def output2file(list_all_coord, list4bed):
+def output2file(list_all_coord, list4bed, build_data):
     """
     Creating .csv, a comma separated text file with exon, transcripts, protein coordinates and a bed file
-    """    
+    """
 
     # Open file in read/write format. If one doesn't exist, it  will create a new one
     db = open("./Outputs/" + lrg_id + "_" + enter_gene + "_coord" + ".txt","w")
     db_csv = open("./Outputs/" + lrg_id + "_" + enter_gene + "_coord" + ".csv","w")
     bed = open ("./Outputs/" + lrg_id + "_" + enter_gene + "_bed", "w")
-#    db_build = open("./Outputs/" + lrg_id + "_" + enter_gene + "_build" + ".txt","w")
+    db_build = open("./Outputs/" + lrg_id + "_" + enter_gene + "_build" + ".txt","w")
+#    db_diff = open("./Outputs/" + lrg_id + "_" + enter_gene + "_diff" + ".csv", "w")
 
     # Add headers to files
     headings = ["Transcript","Exon", "Exon_start", "Exon_end", "Transcipt_start", "Transcript_end", "Protein_start", "Protein_end"]
     bed_headings = ["Chromosome", "Start", "End", "Strand", "Transcript" ]
-#    build_headings = ["Build", "LRG_start", "LRG_end"]
+    build_headings = ["Build", "Chromosome","NC_tanscript","Genomic_start_coord", "Genomic_end_coord","LRG_start", "LRG_end","LRG_size"]
+#    diff_headings = ["Diff_Type",]
 
     # Writing tab separated text file
     db.write("\t".join(headings) + "\n") # writing headings
@@ -312,15 +340,22 @@ def output2file(list_all_coord, list4bed):
         bed.write ("\t".join(group) + "\n")
 
     # Writing build tab-delimited text file
-#    db_build.write("\t".join(build_headings) + "\n")
-#    for group in def_builds:
-#        db_build.write("\t".join(grou) + "\n")
+    db_build.write("\t".join(build_headings) + "\n")
+    for group in build_data:
+        db_build.write("\t".join(group) + "\n")
+
+    # Writing comma seperated values (.csv) file
+#    db_diff.write(",".join(headings) + "\n")
+#    for group in :
+#        db_diff.write(",".join(group) + "\n")
 
     # Closing files
     db.close()
     db_csv.close()
     bed.close()
-#    db_build.close()
+    db_build.close()
+#    db_diff.close()
+
     # Print to screen creation of output files has been successful
     print ("\nOutput files have been saved in /Outputs!")
 
@@ -360,10 +395,10 @@ create_repository_file()
 (root, up_anno) = handle_xml(data)  # 2
 (schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root) # 3
 (gene, str_dir) = get_gen_data(data) # 4
-(build, chro, NC_trans, gstart, gend, lrg_start, lrg_end) = get_build_info(up_anno) # 5
+(build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size) = get_build_info(up_anno) # 5
 (list_all_coord, list4bed) = get_exon_data(data, gstart, gend, chro, str_dir) # 6
 (diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base) = diff_data(data)
-output2file(list_all_coord, list4bed) # 7
+output2file(list_all_coord, list4bed, build_data) # 7
 final_tests() # 8
 disclaimer() # 9
 
