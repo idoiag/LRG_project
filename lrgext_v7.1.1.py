@@ -271,8 +271,8 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
                 elif (coord.get('coord_system').find("p")==-1) or (coord.get('coord_system').find("t" )==-1):
                     start_ex = coord.get('start')
                     end_ex = coord.get('end')
-                    g_start_ex = start_ex + gstart
-                    g_end_ex = end_ex + gend
+                    g_start_ex = str(int(start_ex) + int(gstart))
+                    g_end_ex = str(int(end_ex) + int(gend))
 
                 else:
                     print ("\nProblem extracting exon information")
@@ -320,7 +320,7 @@ def output2file(list_all_coord, list4bed, build_data):
 
     # Add headers to files
     headings = ["Transcript","Exon", "Exon_start", "Exon_end", "Transcipt_start", "Transcript_end", "Protein_start", "Protein_end"]
-    bed_headings = ["Chromosome", "Start", "End", "Strand", "Transcript" ]
+    bed_headings = ["Chromosome", "Genomic Co-ord Exon Start", "Genomic Co-ord Exon End", "Strand", "Transcript" ]
     build_headings = ["Build", "Chromosome","NC_tanscript","Genomic_start_coord", "Genomic_end_coord","LRG_start", "LRG_end","LRG_size"]
 #    diff_headings = ["Diff_Type",]
 
