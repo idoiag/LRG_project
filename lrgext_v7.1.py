@@ -58,10 +58,9 @@ with open('gene_lrg_lst.csv','r') as f:
             found = 'Yes'
             LRG_xml = row[1]
             # if the gene name entered is in the first entry for a row, exit the loop
-            break
     if found == 'No':
         print("\nNo LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org")
-
+        break
 data = path + LRG_xml
 
 #A further improvement would be the addtion of get -ops
