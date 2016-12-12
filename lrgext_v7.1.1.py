@@ -8,7 +8,6 @@ producing different output files:
     - .csv file
     - tab separated .txt file
     - bed file
-    ###### TEST #####
 """
 
 import xml.etree.ElementTree as ET, os.path, sys, csv
@@ -23,47 +22,66 @@ script = sys.argv[0]
 path = './LRGs/'
 
 enter_gene = sys.argv[1].upper()
+#enter_gene = "BRCA1" # For testing purposes
 
-# parse all .xml files in LRGs directory and create a list in .csv format of all LRG file names within the directory and their associated gene names
-with open('gene_lrg_lst.csv','w') as f:
-    csvfileWriter = csv.writer(f)
-    for filename in os.listdir(path):
-        if not filename.endswith('.xml'): continue
-        fullname = os.path.join(path, filename)
-        tree = ET.parse(fullname)
-        root = tree.getroot()
-        gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
-
-        csvfileWriter.writerow([gene, filename])
-    f.close()
+def create_repository_file():
+    """ Parse all .xml files in LRGs directory ("LRGs") and  creates a csv file 
+    ("gene_lrg_lst.csv") listing all existing .xml files within the directory. 
+    The file contains a column with the name of the gene and another
+    with its associated .xml file (named with its LRG identifier)
+    """
+    with open('gene_lrg_lst.csv','w',  newline='') as f:
+        csvfileWriter = csv.writer(f)
+        for filename in os.listdir(path):
+            if not filename.endswith('.xml'): continue
+            fullname = os.path.join(path, filename)
+            tree = ET.parse(fullname)
+            root = tree.getroot()
+            gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
+    
+            csvfileWriter.writerow([gene, filename])
+            
+        f.close()
+    return
 
 ##### TESTING #####
 
 def initial_tests():
-    """ Run initial tests to check the software and file before execution""" 
+    """ Run initial tests to check the software and file before execution: 
+    1st. The LRG file for the povided gene will be searched in a list containing 
+    all the LRG files downloaded. If the file exist, the LRG ID will be captured.
+    If not, a warning will be displayed. 
+    2nd. data consistency within the file will be checked.
+    """ 
+    
+    # Checking if file  exist and capture name of file 
+    with open('gene_lrg_lst.csv','r') as f:
+        csvfileReader = csv.reader(f)
+        # Iterate through .csv file and check first entry in each row for gene name
+        for row in csvfileReader:
+            found = 'No'
+            if enter_gene in row[0]:
+                found = 'Yes'
+                LRG_xml = row[1]
+                # if the gene name entered is in the first entry for a row, exit the loop
+                break
+            
+        if found == 'No':
+            print("\nNo LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org")
+
+    data = path + LRG_xml
+    
+    # Check data consistency within file 
     if (os.path.isfile(data) == False) :
         print ("\nData is not a readable file")
 
     if (os.path.exists(data) == False):
         print ("\nData does not exist")
+        
+    return (data, LRG_xml)
 
-    return
 
-# read the .csv file of LRGs to check an LRG exists for the gene name entered
-with open('gene_lrg_lst.csv','r') as f:
-    csvfileReader = csv.reader(f)
-    # Iterate through .csv file and check first entry in each row for gene name
-    for row in csvfileReader:
-        found = 'No'
-        if enter_gene in row[0]:
-            found = 'Yes'
-            LRG_xml = row[1]
-            # if the gene name entered is in the first entry for a row, exit the loop
-            break
-    if found == 'No':
-        print("\nNo LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org")
-
-data = path + LRG_xml
+##########
 
 #A further improvement would be the addtion of get -ops
 #https://www.tutorialspoint.com/python/python_command_line_arguments.htm
@@ -72,16 +90,20 @@ data = path + LRG_xml
 # Parsing .xml file with 'xml.etree.ElementTree' 
 
 def handle_xml(data):
+    """    
+    Parse xml files
+    """
+    
     tree = ET.parse(data)
     root = tree.getroot()
     up_anno = tree.getroot()[1]
     return(root, up_anno)
 
-"""
-# Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
-"""
-def get_gen_data(data):
 
+def get_gen_data(data):
+    """
+    Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
+    """
     # Extracting name of gene
     gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
     print('\nGene: ', gene)
@@ -98,10 +120,11 @@ def get_gen_data(data):
 
     return (gene, str_dir)
 
-"""
-Get gene background information 
-"""
+
 def get_background(root):
+    """
+    Get gene background information 
+    """
 
     for lrg in root.findall ("."):
         schema = lrg.get('schema_version')
@@ -129,7 +152,9 @@ def get_background(root):
 # It will provide "N/A", when protein coordinates are not available
 
 def get_build_info(up_anno):
-
+    """
+    Get information about the Chromosomic build
+    """
     for annotation in up_anno[1].findall('mapping'):
         build = annotation.get('coord_system')
         chro = annotation.get('other_name')
@@ -183,11 +208,12 @@ def get_build_info(up_anno):
 #    assert str(gend).isdigit()
 #    return(gstart_int,gend_int)
 
-"""
-Get information about the exon for the different transcripts, including number of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein
-"""
-def get_exon_data(data, gstart, gend, chro, str_dir):
 
+def get_exon_data(data, gstart, gend, chro, str_dir):
+    """
+    Get information about the exon for the different transcripts, including number 
+    of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein
+    """
     trans_number = 0
     list_all_coord, list4bed = [], []
 
@@ -238,6 +264,9 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
 # Parse xml and retrieve data for all sequence differences between build 37 and 38
 
 def diff_data(data):
+    """
+    Get differences between annotations
+    """
     for diff in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span/diff'):
         diff_type = diff.get('type')
         diff_lrg_start = diff.get('lrg_start')
@@ -249,10 +278,13 @@ def diff_data(data):
         print(diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base)
     return(diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base)
 
-"""
-Creating .csv, a comma separated text file with exon, transcripts, protein coordinates and a bed file"""
+
 
 def output2file(list_all_coord, list4bed):
+    """
+    Creating .csv, a comma separated text file with exon, transcripts, protein coordinates and a bed file
+    """    
+
     # Open file in read/write format. If one doesn't exist, it  will create a new one
     db = open("./Outputs/" + lrg_id + "_" + enter_gene + "_coord" + ".txt","w")
     db_csv = open("./Outputs/" + lrg_id + "_" + enter_gene + "_coord" + ".csv","w")
@@ -301,10 +333,11 @@ def disclaimer():
     return
 
 
-"""
-Tests run at the end of the program
-"""
+
 def final_tests():
+    """
+    Tests run at the end of the program
+    """
 
     """ Checking for xml format """
     if schema != "1.9":
@@ -318,11 +351,11 @@ def final_tests():
         print("\nN.B. This LRG is on the FORWARD strand")
     return
 
-### End of testing ###
 
 #### MAIN information ####
 
-initial_tests()   # 1
+(data, LRG_xml)=initial_tests()
+create_repository_file()
 #(gstart_int,gend_int) = is_int(gstart,gend)
 (root, up_anno) = handle_xml(data)  # 2
 (schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root) # 3
