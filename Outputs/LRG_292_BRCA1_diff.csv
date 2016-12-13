@@ -1,4 +1,4 @@
-Diff_Type,LRG_start,LRG_end,Genomic_coord_start,Genomic_coord_end,LRG_seq_base,LRG_other_base
+Diff_type,LRG_start,LRG_end,Geno_coord_start,Geno_coord_end,LRG_seq_base,LRG_other_base
 mismatch,2600,2600,43215382,43215382,G,A
 mismatch,5792,5792,43212190,43212190,C,T
 mismatch,10412,10412,43207570,43207570,G,A

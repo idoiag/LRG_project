@@ -1,4 +1,4 @@
-Chromosome	Genomic Co-ord Exon Start	Genomic Co-ord Exon End	Strand	Transcript
+chrom	chromStart	chromEnd	strand	transcript
 17	43116796	43310694	-	1
 17	43118164	43311948	-	1
 17	43126500	43320239	-	1

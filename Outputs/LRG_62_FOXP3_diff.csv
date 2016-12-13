@@ -1,0 +1,7 @@
+Diff_type,LRG_start,LRG_end,Geno_coord_start,Geno_coord_end,LRG_seq_base,LRG_other_base
+lrg_ins,3268,3268,49266558,49266559,T,-
+mismatch,4979,4979,49264848,49264848,C,T
+lrg_ins,5320,5322,49264507,49264508,ATA,-
+lrg_ins,6657,6658,49263173,49263174,TT,-
+mismatch,8048,8048,49261784,49261784,A,C
+other_ins,13607,13608,49256221,49256224,-,CTCT
