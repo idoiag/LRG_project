@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 # Authors: Idoia Gomez-Paramio and Verity Fryer 2016
 # Usage: python lrgext_v7.1.py enter_gene (e.g. BRCA1, maybe be uppercase or lowercase or a combination of both)
@@ -67,7 +68,9 @@ def initial_tests():
                 break
 
         if found == 'No':
-            print("\nNo LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org")
+            # If no LRG.xml found for the gene enetered, display an error message and exit the script immediately
+            print("\nNo LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org\n")
+            exit()
 
     data = path + LRG_xml
 
@@ -82,10 +85,6 @@ def initial_tests():
 
 
 ##########
-
-#A further improvement would be the addtion of get -ops
-#https://www.tutorialspoint.com/python/python_command_line_arguments.htm
-#getopt.getopt(LRG, -l:, [long_options])
 
 # Parsing .xml file with 'xml.etree.ElementTree'
 
@@ -227,7 +226,7 @@ def get_build_info(up_anno):
     if lrg_size_38 == lrg_size_37:
         print("\nLRG size is the same between GRCh37 and GRCh38")
     else:
-        print("WARNING: LRG sizes differ between GRCh37 and GRCh38")
+        print("\nWARNING: LRG sizes differ between GRCh37 and GRCh38")
 
 #def is_int(gstart, gend):
 #    assert str(gstart).isdigit()
@@ -293,6 +292,8 @@ def diff_data(data):
     """
     Get differences between annotations
     """
+    diff_data = []
+
     for diff in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span/diff'):
         diff_type = diff.get('type')
         diff_lrg_start = diff.get('lrg_start')
@@ -301,12 +302,18 @@ def diff_data(data):
         diff_gen_end = diff.get('other_end')
         lrg_seq_base = diff.get('lrg_sequence')
         other_seq_base = diff.get('other_sequence')
-        print(diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base)
-    return(diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base)
+
+        # create list of differences between builds data
+        diff_data.append([diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base])
+
+    # Data to be returned in columns in .csv file
+    for group in diff_data:
+        pass
+
+    return(diff_data)
 
 
-
-def output2file(list_all_coord, list4bed, build_data):
+def output2file(list_all_coord, list4bed, build_data, diff_data):
     """
     Creating .csv, a comma separated text file with exon, transcripts, protein coordinates and a bed file
     """
@@ -316,20 +323,20 @@ def output2file(list_all_coord, list4bed, build_data):
     db_csv = open("./Outputs/" + lrg_id + "_" + enter_gene + "_coord" + ".csv","w")
     bed = open ("./Outputs/" + lrg_id + "_" + enter_gene + "_bed", "w")
     db_build = open("./Outputs/" + lrg_id + "_" + enter_gene + "_build" + ".txt","w")
-#    db_diff = open("./Outputs/" + lrg_id + "_" + enter_gene + "_diff" + ".csv", "w")
+    db_diff = open("./Outputs/" + lrg_id + "_" + enter_gene + "_diff" + ".csv", "w")
 
     # Add headers to files
     headings = ["Transcript","Exon", "Exon_start", "Exon_end", "Transcipt_start", "Transcript_end", "Protein_start", "Protein_end"]
     bed_headings = ["Chromosome", "Genomic Co-ord Exon Start", "Genomic Co-ord Exon End", "Strand", "Transcript" ]
     build_headings = ["Build", "Chromosome","NC_tanscript","Genomic_start_coord", "Genomic_end_coord","LRG_start", "LRG_end","LRG_size"]
-#    diff_headings = ["Diff_Type",]
+    diff_headings = ["Diff_Type","LRG_start","LRG_end","Genomic_coord_start","Genomic_coord_end","LRG_seq_base","LRG_other_base"]
 
-    # Writing tab separated text file
+    # Writing tab separated text file for all coords
     db.write("\t".join(headings) + "\n") # writing headings
     for group in list_all_coord:
         db.write ("\t".join(group) + "\n") # writing coordinates
 
-    # Writing comma-seperated values (.csv) file
+    # Writing comma-seperated values (.csv) file for all coords
     db_csv.write(",".join(headings) + "\n") # writing headings
     for group in list_all_coord:
         db_csv.write (",".join(group) + "\n") # writing coordinates
@@ -339,22 +346,22 @@ def output2file(list_all_coord, list4bed, build_data):
     for group in list4bed:
         bed.write ("\t".join(group) + "\n")
 
-    # Writing build tab-delimited text file
+    # Writing tab-delimited text file for build data
     db_build.write("\t".join(build_headings) + "\n")
     for group in build_data:
         db_build.write("\t".join(group) + "\n")
 
-    # Writing comma seperated values (.csv) file
-#    db_diff.write(",".join(headings) + "\n")
-#    for group in :
-#        db_diff.write(",".join(group) + "\n")
+    # Writing a comma-separated values (.csv) fir for LRG differences data
+    db_diff.write(",".join(diff_headings) + "\n")
+    for group in diff_data:
+        db_diff.write(",".join(group) + "\n")
 
     # Closing files
     db.close()
     db_csv.close()
     bed.close()
     db_build.close()
-#    db_diff.close()
+    db_diff.close()
 
     # Print to screen creation of output files has been successful
     print ("\nOutput files have been saved in /Outputs!")
@@ -397,8 +404,8 @@ create_repository_file()
 (gene, str_dir) = get_gen_data(data) # 4
 (build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size) = get_build_info(up_anno) # 5
 (list_all_coord, list4bed) = get_exon_data(data, gstart, gend, chro, str_dir) # 6
-(diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base) = diff_data(data)
-output2file(list_all_coord, list4bed, build_data) # 7
+(diff_data) = diff_data(data)
+output2file(list_all_coord, list4bed, build_data, diff_data) # 7
 final_tests() # 8
 disclaimer() # 9
 
