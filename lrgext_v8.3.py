@@ -21,7 +21,7 @@ path = './LRGs/'
 opath = './Outputs/'
 
 enter_gene = sys.argv[1].upper()
-#enter_gene = "COL1A1" # For testing purposes
+#enter_gene = "APC" # For testing purposes
 
 def create_repository_file():
 
@@ -200,12 +200,12 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
     # Loop to extract information when there is more than 1 transcript
     for transcripts in root.findall('./fixed_annotation/transcript'):
         trans_number += 1
-        count = 0
+        count_ex_tran = 0 # to count exons per transcript
+        count_ex_all = 0 # to count all exons. Testing
         
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
         tot_exons = len(exon_lst) 
         print("\nNumber of transcripts: ", trans_number)
-        print('\nExon count: ', tot_exons)
         
         
         for exons in transcripts.findall('exon'):
@@ -216,7 +216,8 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
             start_ex_pt = "N/A"
             end_ex_pt = "N/A"
             
-            count +=1
+            count_ex_tran +=1
+            
             for coord in exons.findall('coordinates'):
                 if (coord.get('coord_system').find("t")!=-1):
                     start_ex_tr = coord.get('start')
@@ -241,12 +242,13 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt])
         
-        print ("\nCOUNT = " + str(count) )
+        print ("\nExon count: " + str(count_ex_tran)  )
+        
     # Prepare lists to be printed in columns
     for group in list_all_coord:
         pass
 
-    return (list_all_coord, list4bed, tot_exons, count)
+    return (list_all_coord, list4bed, tot_exons, count_ex_tran)
 
 # Parse xml and retrieve data for all sequence differences between build 37 and 38
 
@@ -378,7 +380,8 @@ def initial_tests():
     return (data, LRG_xml)
     
     
-def final_tests(tot_exons,count):
+#def final_tests(tot_exons, count_ex_tran):
+def final_tests(tot_exons):
     """
     Tests run at the end of the program
     """
@@ -404,7 +407,7 @@ def final_tests(tot_exons,count):
     else:
         print("\nReference sequence GRCh38 is equal to LRG size") 
         
-    assert (tot_exons == count), "Problem with exon number"
+    #assert (tot_exons == count), "Problem with exon number"
         
 
     return
@@ -433,7 +436,8 @@ def main():
     coord2file(list_all_coord, list4bed)
     diff2file(build_data, diff_data)
     
-    final_tests(tot_exons, count)
+    #final_tests(tot_exons, count_ex_tran)
+    final_tests(tot_exons)
     disclaimer()
     
 if __name__ == "__main__":
