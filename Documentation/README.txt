@@ -261,7 +261,7 @@ LRG_214 = NF1: Used to test handling of more than one transcript contained withi
 - Upgrade: Addition of test for strand direction within function "final_tests" v.6.1
 - Feature: /VF, IP/ v.7 
 - Improvement: Free coded added in functions. Bug linked to Window-Linux environment solved. v.7.1 
-- Feature: /VF/ v.8
+- Feature: /VF, IP/ v.8
 - Improvement: Code simplified, code to print differences build included in new function. v.8.1
 - Bug fixed: Domain of bed files has been fixed. Usage and comments improved. v.8.1.1. 
 
