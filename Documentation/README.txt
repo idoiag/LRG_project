@@ -99,8 +99,7 @@ describe each function, IGP  + VF as required/
 	9. Exon_number: check that we get the right number of exons /IGP/VF?/
 	  
 2.PARSING: 
-Being able to parse an xml file is a today's need for any bioinformatician working in a clinical 
-diagnostic laboratory. The reason behind is increasing dependency of lab on accurate and updated information
+Being able to parse a file such as an xml or JSON omat file is a essential skill for any bioinformatician working in a clinical diagnostic laboratory. The reason behind is increasing dependency of lab on accurate and updated information
 and the increasing amount of data available over the time. 
 This is especially true in the context of genetic testing due to the impact results can have on 
 the lives of individuals and their families once tested. 
@@ -152,10 +151,10 @@ Transcript,Exon,Exon_start,Exon_end,Transcipt_start,Transcript_end,Protein_start
 b) Creation of a bed file. Bed files have a specific format, with 3 mandatory columns and 9 optional columns: 
 Source: https://genome.ucsc.edu/FAQ/FAQformat#format1 /IGP, Need to make this bit shorter/
 
-1.chrom - The name of the chromosome (e.g. chr3, chrY, chr2_random) or scaffold (e.g. scaffold10671).
-2.chromStart - The starting position of the feature in the chromosome or scaffold. The first base in a 
+1.chrom - Chromosome number (e.g. chr3, chrY, chr2_random) or scaffold (e.g. scaffold10671).
+2.chromStart - The starting position of the feature in the chromosome/scaffold. The first base in a 
 chromosome is numbered 0.
-3.chromEnd - The ending position of the feature in the chromosome or scaffold. The chromEnd base is not 
+3.chromEnd - The end position of the feature in the chromosome/scaffold. The chromEnd base is not 
 included in the display of the feature. For example, the first 100 bases of a chromosome are defined as 
 chromStart=0, chromEnd=100, and span the bases numbered 0-99.
 4.(optinal) - strand direction
@@ -173,75 +172,101 @@ d) ... /VF/
 
 Main program running through different steps: 
 
-1. Initial tests: 
+1. Create a LRG file list. 
+Aim: Create a file listing all LRG files existing on the LRG directory. 
+Function:create_repository_file()
+
+2. Initial tests: 
 Aim: Run initial tests to check for the existence of an LRG file for the given gene name.
 It also checks the consistency and readabilyt of the file. 
 Function:initial_tests()
-
-2. Create a LRG file list. 
-Aim: Create a file listing all LRG files existing on the LRG directory. 
-Function:create_repository_file()
 
 3. Handle xml structure:
 Aim: Use 'xml.etree.ElementTreee' to extract information from xml files
 Function: (root, up_anno) = handle_xml(data)
 
-4. Getting background information: 
+4. Get gene and strand information:
+Aim:Extract HGVS gene name, and tag strand as forward (+) or reverse (-) 
+Function: (gene, str_dir) = get_gen_data(data) 
+
+5. Getting background information: 
 Aim: Get background information about the gene
 Function: (schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = 
 get_background(root)
-
-5. Get gene and strand information:
-Aim:Extract HGVS gene name, and tag strand as forward (+) or reverse (-) 
-Function: (gene, str_dir) = get_gen_data(data) 
 
 6. Get information about the different builds: 
 Aim: Get build information, including coordinates, chromosome, transcript,and genomic start and end. It will provide "N/A", when protein coordinates are not available
 Function: (coord, chro, NC_trans, gstart, gend) = get_build_info(up_anno)
 
-7. Get differences between the builds
-Aim: /VF, as short as possible, no more than 1 line =80 characters)
-Function:(diff_data) = diff_data(data)
-
-8. Get information about the exon:
+7. Get information about the exon:
 Aim: Get information about the exon for the different transcripts, including number of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein.
 Function: (list_all_coord, list4bed)= get_exon_data(data, gstart, gend, chro, str_dir)
 
-7. Save exon, transcript and protein coordinates to file
+8. Get differences between LRG sequence and GRCh builds
+Aim: /VF, as short as possible, no more than 1 line =80 characters)
+Function:(diff_data) = diff_data(data)
+
+9. Save exon, transcript and protein coordinates to file
 Aim: Creating csv, a tab separate txt file with exon, transcripts and protein coordinates and a bed file
 Function: output2file(list_all_coord, list4bed)
 
-8. Save build differences to file
+10. Save build information and differences to file
 Aim: Create a comma and a tab separated file highlighting difference between builds
 Function:diff2file(build_data, diff_data)
 
-9. Print disclaimer:
-Aim: Print disclaimer statement at the end of program execution
-Function: disclaimer()
-
-10. Run of final tests
+11. Run of final tests
 Aim: Checking for the xml file format/version.
 Function: final_tests()
+
+12. Print disclaimer:
+Aim: Print disclaimer statement at the end of program execution
+Function: disclaimer()
 
 Note: Refer to Developers file for further information
 
 
 #### SCOPE /VF In Progress/
-This software has been tested in Windows and Linux  with a sample of .xml files obtained from the LRG 
-website. This sample contain genes with one or more builds and/or transcripts. 
+This software has been tested in Windows and Linux with a sample of .xml files obtained from the LRG website. This sample contain genes with one or more builds and/or transcripts to test robustness of the script. 
 
-Genes were selected based on their clinical utility .... the main genes analysed in diagnostic labstories, 
-such as:
+The following genes and associated LRG files were used during testing for reasons outlined below.
 
-/Here we include a list of the genes tested, the gene name and its main impact/
+LRG_292 = BRCA1: 
+Routinely tested to diagnose breast/ovarian cancer. This LRG record was used to test script handling of an LRG record for a gene that occurs on the reverse strand.
 
-The following genes and their corresponding LRG files were used during testing for reasons outlined below.
-LRG_292 = BRCA1: Decisive in the diagnosis of Breast cancer. Used to test script handling of genes that occur on the reverse strand.
 LRG_1 = COL1A1:
-LRG_9 = SDHD: Used to test script handling of a record that is currently 'Pending Approval' therefore the record is not public yet and subject to change. This was not possible to test as the .xml record for LRGs that are 'Pending Approval' do not contain this phrase within the LRG therefore the only way to know if the LRG is pending approval or has been accepted is to look on the website.
-LRG_214 = NF1: Used to test handling of more than one transcript contained within an LRG file.
+Disease-causing variants in this gene are associated with CEhlers-Danlos sydrome, Caffey disease and osteogenesis imperfecta. This LRG record was used to test script handling of ???.
 
-/ LRG_214 (Gene NF1) Two transcripts LRG_292 (Gene BRCA1) Reverse strand/
+LRG_9 = SDHD: 
+This gene is a tumour suppressor and codes for one of four subunits (the others being SDHA, SDHB and SDHC) that comprise the succinate dehydrogenase (SDH) enzyme, important mitochondrial function. Used to test script handling of a record that is currently 'Pending Approval' therefore the record is not public yet and subject to change. This was not possible to test as the .xml record for LRGs that are 'Pending Approval' do not contain this phrase within the LRG therefore the only way to know if the LRG is pending approval or has been accepted is to look on the website. This LRG record was used to test script handling of
+
+LRG_62 = FOXP3: 
+A transcription factor gene found on the X-chromosome, variants in which may cause susceptibility to diabetes mellitus and immunodysregulation (as it is codes a protein that is essential for normal function of T cells). This LRG record was used to test script handling of
+
+LRG_85 = MRE11: 
+Associated with ataxia-telangiectasia-like disorder.This LRG record was used to test script handling of
+
+LRG_220 = MUTYH:
+Associated with colorectal/gastric cancers, particularly and inherited autosomal recessive (AR) form of adenomatous polyposis (benign polyps in the large intestine/rectum that may become cancerous unless treated).This LRG record was used to test script handling of
+
+LRG_130 = APC:
+Encodes a protein involved in tumour suppression, mutations in  which are linked to seevral types of cancer (including colorectal cancer, brain tumours and gardner syndrome).This LRG record was used to test script handling of an LRG with more than one transcript (3 in total).
+
+
+LRG_517 = RB1:
+A tumour suppressor gene that also has a role in apoptosis (programmed cell death) and cell differentiation. Used in the diagnosis of retinoblastoma, also associated with bladder cancer and other form of cancer (lung and breast cancer, osteosarcoma and melanoma). This LRG record was used to test script handling of
+
+LRG_199 = DMD:
+This gene is tested in diagnosing paediatric caridomyopathies, Duchenne muscular dystrophy and Becker muscular dystrophy. It is one of the largest genes in the human genome and codes for a protein called dystrophin. This LRG record was used to test script handling of
+
+LRG_214 = NF1: 
+Used in diagnosis of neurofibromatosis. This LRG record was used to test script handling of more than one transcript contained within an LRG file.
+
+Information regarding genotype-phenotype relationships and summary of gene functions from OMIM (https://www.omim.org/) and Genetics Home Reference (https://ghr.nlm.nih.gov/).
+
+The LRG for each gene have been created using a particular Genome Reference Consortium (GRC) build. Once the LRG has been created, the start of the LRG will be at LRG position 1, whereas the LRG end position will be atthe end of the LRG. The size of the LRG will not cahnge once it has been created. However, each time a new GRC human DNA build is released, the LRG entries will be updated to include the genomic start and end co-ordinates of the gene (which may, and probably will, differ between builds) as well as creating a file that contains any sequence differences between the refernce genome and the LRG.
+
+For example, the BRCA1 gene has an LRG (292) that is 193,688 bases long. As it was created using GRCh37, there are no differences between the LRG sequence and the GRCh37 gene sequence. However, the gene co-ordinates for BRCA1 in GRCh38 have changed such that the gene is now 193,686 bases long. As the LRG sequence does not change, there must be differences between the sequence for the LRG and the gene sequnce in GRCh38. These differences are extracted from the LRG xml file into a .csv file called LRG_292_BRCA1_diff.csv. In this file (as in the table on the LRG webpage), the "LRG allele" is the base/sequence present in the LRG and the "Reference allele" is the base/sequence present in the Reference sequence (in this case, the sequence from GRCh38).
+N.B. As more GRCh buids are released, the "reference allele" will change according to which build is being used. The LRG should never change.
 
 #### VERSIONING /VF, IP/
 
@@ -263,14 +288,10 @@ LRG_214 = NF1: Used to test handling of more than one transcript contained withi
 - Improvement: Free coded added in functions. Bug linked to Window-Linux environment solved. v.7.1 
 - Feature: /VF, IP/ v.8
 - Improvement: Code simplified, code to print differences build included in new function. v.8.1
-- Bug fixed: Domain of bed files has been fixed. Usage and comments improved. v.8.1.1. 
+- Bug fixed: Domain of bed files has been fixed. Usage and comments improved. v.8.1.1.
+- Function added: v8.2
 
-###### to be moved once finished######
-The LRG for each gene have been created using a particular Genome Reference Consortium (GRC) build. Once the LRG has been created, the start of the LRG will be at LRG position 1, whereas the LRG end position will be atthe end of the LRG. The size of the LRG will not cahnge once it has been created. However, each time a new GRC human DNA build is released, the LRG entries will be updated to include the genomic start and end co-ordinates of the gene (which may, and probably will, differ between builds) as well as creating a file that contains any sequence differences between the refernce genome and the LRG.
 
-For example, the BRCA1 gene has an LRG (292) that is 193,688 bases long. As it was created using GRCh37, there are no differences between the LRG sequence and the GRCh37 gene sequence. However, the gene co-ordinates for BRCA1 in GRCh38 have changed such that the gene is now 193,686 bases long. As the LRG sequence does not change, there must be differences between the sequence for the LRG and the gene sequnce in GRCh38. These differences are extracted from the LRG xml file into a .csv file called LRG_292_BRCA1_diff.csv. In this file (as in the table on the LRG webpage), the "LRG allele" is the base/sequence present in the LRG and the "Reference allele" is the base/sequence present in the Reference sequence (in this case, the sequence from GRCh38).
-N.B. As more GRCh buids are released, the "reference allele" will change according to which build is being used. The LRG should never change.
-######
 
 #### DISCLAIMER /IGP, Done/
 Please cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, Faculty of Medicine and Human Sciences, The University of Manchester.' or successor references as defined by the authors.
