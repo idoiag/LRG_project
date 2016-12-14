@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import xml.etree.ElementTree as ET, os.path, sys, csv
+
 """
 Authors: Idoia Gomez-Paramio and Verity Fryer 2016
 lrgext program extracts build, gene, transcript, exon information from a file in LRG format given a HGVS gene (case insensitive).
@@ -8,19 +10,15 @@ The script supports LRG files with more than one transcript.
 Usage: python script_name gene_name e.g. python lrgext_v8.1.1.py BRCA1
 """
 
-import xml.etree.ElementTree as ET, os.path, sys, csv, getopt
 
-enter_gene = "APC" # For testing purposes
-#lrg_list = 'gene_lrg_lst.csv'
-
-def create_repository_file():
+def create_repository_file(path, lrg_list):
 
     """
     This function will parse all .xml files in LRGs directory ("LRGs") and create a csv file.
     This file ("gene_lrg_lst.csv") lists all existing .xml files within the directory, and the gene name associated with the LRG
     """
 
-    with open(lrg_list,'w+',  newline='') as f:
+    with open(lrg_list,'w',  newline='') as f:
         csvfileWriter = csv.writer(f)
         for filename in os.listdir(path):
             if not filename.endswith('.xml'): continue
@@ -184,19 +182,18 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
     This will include number of exons and exon coordinates in the LRG system regarding the cdna, transcript and protein
     """
 
-    trans_number = 0
+    trans_number = 0 # starting trans counter
+    count_ex_all = 0 # starting all_exons (in all transcripts counter)
     list_all_coord, list4bed = [], []
 
     # Loop to extract information when there is more than 1 transcript
     for transcripts in root.findall('./fixed_annotation/transcript'):
         trans_number += 1
-        count_ex_tran = 0
-        #count_ex_all = 0
+        count_ex_tran = 0 # to count exons per transcript
         
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
         tot_exons = len(exon_lst) 
         
-        count_ex_all = 0
         for exons in transcripts.findall('exon'):
             ex_num = exons.get('label')
 
@@ -206,6 +203,7 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
             end_ex_pt = "N/A"
             
             count_ex_tran +=1
+            
             for coord in exons.findall('coordinates'):
                 if (coord.get('coord_system').find("t")!=-1):
                     start_ex_tr = coord.get('start')
@@ -223,20 +221,21 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
 
                 else:
                     print ("\nProblem extracting exon information")
-            #count_ex_all +=  count_ex_tran
+
             # Create list of coordinates
-        
             
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt])
-            count_ex_all +=  count_ex_tran
+        
+        count_ex_all += count_ex_tran # all all exons from all transcripts
         print("\nTranscript: ",trans_number,  " Exons: ", str(count_ex_tran)  )
     #print ("\nExon all: " + str(count_ex_all)  ) # Testing
+        
     # Prepare lists to be printed in columns
     for group in list_all_coord:
         pass
 
-    return (list_all_coord, list4bed, tot_exons)
+    return (list_all_coord, list4bed, tot_exons, count_ex_tran, count_ex_all)
 
 # Parse xml and retrieve data for all sequence differences between build 37 and 38
 
@@ -265,11 +264,11 @@ def get_diff_data(data, root):
     return(diff_data)
 
 
-def coord2file(list_all_coord, list4bed, lrg_id):
+def coord2file(opath, enter_gene, list_all_coord, list4bed, lrg_id):
     """
     Creates .csv, a comma separated text file with exon, transcripts, protein coordinates and a bed file
     """
-
+    
     # Open file in read/write format. If one doesn't exist, it  will create a new one
     db = open(opath + lrg_id + "_" + enter_gene + "_coord.txt","w")
     db_csv = open(opath + lrg_id + "_" + enter_gene + "_coord.csv","w")
@@ -296,7 +295,7 @@ def coord2file(list_all_coord, list4bed, lrg_id):
 
     return
 
-def diff2file (build_data, diff_data, lrg_id):
+def diff2file (opath, enter_gene, build_data, diff_data, lrg_id):
 
     """
     Creates a a comma and tab separated file describing the build differences
@@ -330,7 +329,7 @@ def diff2file (build_data, diff_data, lrg_id):
     print ("\nOutput files have been saved in /Outputs!")
 
 
-def initial_tests():
+def initial_tests(path, enter_gene):
     """
     Run initial tests to check the software and file before execution:
     1. The 'gene_lrg_lst.csv' will be searched for the gene name entered.
@@ -368,7 +367,8 @@ def initial_tests():
     return (data, LRG_xml)
     
     
-def final_tests(tot_exons, schema, str_dir, lrg_size_38, lrg_size_37, gene_len_38):
+#def final_tests(tot_exons, count_ex_tran):
+def final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_37, gene_len_38, count_ex_all ):
     """
     Tests run at the end of the program
     """
@@ -394,7 +394,7 @@ def final_tests(tot_exons, schema, str_dir, lrg_size_38, lrg_size_37, gene_len_3
     else:
         print("\nReference sequence GRCh38 is equal to LRG size") 
         
-    #assert (tot_exons == count), "Problem with exon number"
+    assert (tot_exons == count_ex_all), "Problem with exon number"
         
 
     return
@@ -405,50 +405,18 @@ def disclaimer():
     references as defined by the authors.\n""")
     return
 
-#### MAIN information ####
-
-
-
-"""    
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "ho:v", ["help", "output="])
-    except getopt.GetoptError as err:
-        # print help information and exit:
-        print str(err)  # will print something like "option -a not recognized"
-        usage()
-        sys.exit(2)
-    output = None
-    verbose = False
-    
-    for o, a in opts:
-        if o == "-v":
-            verbose = True
-        elif o in ("-h", "--help"):
-            usage()
-            sys.exit()
-        elif o in ("-o", "--output"):
-            output = a
-        else:
-            assert False, "unhandled option"
-    
-"""    
-
-
 
 def main():
+    script = sys.argv[0]
+    #enter_gene = sys.argv[1].upper()
+    enter_gene = "APC" # For testing purposes
     
-    lrg_list = 'gene_lrg_lst.csv'
     path = './LRGs/'
     opath = './Outputs/'
+    lrg_list = 'gene_lrg_lst.csv'
     
-    #script = sys.argv[0]
-    #enter_gene = sys.argv[1].upper()
-    
-    
-    #LRG = sys.argv[1]
-
-    create_repository_file()
-    (data, LRG_xml)=initial_tests()
+    create_repository_file(path, lrg_list)
+    (data, LRG_xml)=initial_tests(path, enter_gene)
     (root, up_anno) = handle_xml(data)
     
     (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
@@ -457,12 +425,14 @@ def main():
     (build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len) = get_build_info(up_anno)
     (diff_data) = get_diff_data(data, root)
     
-    (list_all_coord, list4bed, tot_exons) = get_exon_data(data, gstart, gend, chro, str_dir, root)
-    coord2file(list_all_coord, list4bed, lrg_id)
-    diff2file(build_data, diff_data, lrg_id)
+    (list_all_coord, list4bed, tot_exons, count_ex_tran, count_ex_all) = get_exon_data(data, gstart, gend, chro, str_dir, root)
+    coord2file(opath, enter_gene, list_all_coord, list4bed, lrg_id)
+    diff2file(opath, enter_gene, build_data, diff_data, lrg_id)
     
-    final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_38)
+    final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_37, gene_len_38, count_ex_all)
     disclaimer()
     
 if __name__ == "__main__":
     main()
+
+
