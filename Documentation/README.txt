@@ -65,26 +65,35 @@ producing different output files:
     - bed file: provides the local coordinates and their equivalent genomic coordinates for each exon 
     - csv file providing information regarding differences between DNA sequences of the LRG and GRCh builds
     - tab seperated text file that provides information regarding the GRCh builds
+lrgext.x
 
-#### FEATURES /IGP + VF/
+#### FEATURES 
 
-/Background:VF 
+MAIN FEATURES:
+- Versatility: lrgext.x is fully modular making it compatible as a package. Functions can be used as stand-alone by other scripts.
+- Efficiency: lrgext provides an efficient extraction of data contain in LRG files ("Schema 1.9")  
+- Robustnes: thanks to its modular dessign, its development following "defensive programming" guidance, and its extensive testing for bug finding and resolution
+- Compatibility: It has been designed and tested for its use in Linux and Windows environments
+
+
 
 1.TESTING: 
 Throughout development of this script, testing of the script and the error handling capabilities were frequently and routinely carried out to ensure that the script was extracting the data required, producing files as written and successfully implemeting error handling techniques.
-This testing is very important as there is no way of knowing if the script will work under all the conditions (i.e. different file formats due to different levels of data avilable for each LRG record) without carrying out extensive testing.
+This testing is very important as there is no way of knowing if the script will work under all the conditions (i.e. different file formats due to different levels of data avilable for each LRG record) without carrying out extensive testing. Testing was performed using the python modules and commands specific for these function (e.g os.path.isfile, os.path.exists, assert) and customized command using if statements. Testing is divided into 2 section:
 
-These tests include:
+a) Initial tests:
 
-	1. LRG_ID: check if the given gene has an allocated LRG ID.
-	2. LRG file: Check the LRG exists and is a readable file. 
-	3. Schema: Check that the xml version format (schema) is right.
-	4. Strand: check the direction of the strand and warn if reverse.
-	5. Build_number: check the number of builds. 
-	6. Gene size: check if the size of the gene is different to the LRG
-	7. Data_consistency: check that coordinates extracted are numbers
-	8. Exon_coor: check that exons do not overlap /IGP/VF ?/
-	9. Exon_number: check that we get the right number of exons /IGP/VF?/
+1. LRG_ID: check if the given gene has an allocated LRG ID.
+2. LRG file: Check the LRG exists and is a readable file. 
+3. Schema: Check that the xml version format (schema) is right.
+4. Strand: check the direction of the strand and warn if reverse.
+
+b)Final tests: 
+5. Build_number: check the number of builds. 
+6. Gene size: check if the size of the gene is different to the LRG
+7. Data_consistency: check that coordinates extracted are numbers
+8. Exon_coor: check that exons do not overlap /IGP/VF ?/
+9. Exon_number: check that we get the right number of exons 
 	  
 2.PARSING: 
 Being able to parse a file such as an xml or JSON omat file is a essential skill for any bioinformatician working in a clinical diagnostic laboratory. This is due to the requirement for laboratories to have accurate and up-to-date information whilst there is an increasing amount of data available. 
@@ -276,8 +285,8 @@ N.B. As more GRCh buids are released, the "reference allele" will change accordi
 - Feature: /VF, IP/ v.8
 - Improvement: Code simplified, code to print differences build included in new function. v.8.1
 - Bug fixed: Domain of bed files has been fixed. Usage and comments improved. v.8.1.1.
-- Function added: v8.2
-
+- Feature: New tests added v8.2
+- Feature: New test added, main function, structure optimized v.8.3
 
 
 #### DISCLAIMER /IGP, Done/
