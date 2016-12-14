@@ -7,7 +7,7 @@ Data is exported to comma seperated values (.csv) and tab separated file (as .tx
 A bed file will also be created.
 The script supports LRG files with more than one transcript.
 
-Usage: python script_name gene_name e.g. python lrgext_v8.1.1.py BRCA1
+Usage: python script_name gene_name e.g. python lrgext_v8.2.py BRCA1
 """
 
 import xml.etree.ElementTree as ET, os.path, sys, csv
@@ -170,7 +170,7 @@ def get_build_info(up_anno):
             NC_trans = annotation.get('other_id')
             gstart = int(annotation.get('other_start'))
             gend = int(annotation.get('other_end'))
-            gene_len = (gend - gstart) 
+            gene_len = (gend - gstart)
             gene_len_37 = gene_len
 
             # determine start and end of LRG
@@ -190,7 +190,7 @@ def get_build_info(up_anno):
             NC_trans = annotation.get('other_id')
             gstart = int(annotation.get('other_start'))
             gend = int(annotation.get('other_end'))
-            gene_len = (gend - gstart) 
+            gene_len = (gend - gstart)
             gene_len_38 = gene_len
 
             # determine start and end of LRG
