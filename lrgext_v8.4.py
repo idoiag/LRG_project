@@ -10,7 +10,7 @@ Usage: python script_name gene_name e.g. python lrgext_v8.1.1.py BRCA1
 
 import xml.etree.ElementTree as ET, os.path, sys, csv, getopt
 
-#enter_gene = "APC" # For testing purposes
+enter_gene = "APC" # For testing purposes
 #lrg_list = 'gene_lrg_lst.csv'
 
 def create_repository_file():
@@ -441,8 +441,8 @@ def main():
     path = './LRGs/'
     opath = './Outputs/'
     
-    script = sys.argv[0]
-    enter_gene = sys.argv[1].upper()
+    #script = sys.argv[0]
+    #enter_gene = sys.argv[1].upper()
     
     
     #LRG = sys.argv[1]
