@@ -18,13 +18,13 @@ import xml.etree.ElementTree as ET, os.path, sys, csv
 Capturing file and initializing variables
 """
 
-script = sys.argv[0]
+#script = sys.argv[0]
 #LRG = sys.argv[1]
 path = './LRGs/'
 opath = './Outputs/'
 
-enter_gene = sys.argv[1].upper()
-# enter_gene = "FOXP3" # For testing purposes
+#enter_gene = sys.argv[1].upper()
+enter_gene = "APC" # For testing purposes
 
 def create_repository_file():
     """ Parse all .xml files in LRGs directory ("LRGs") and  creates a csv file 
