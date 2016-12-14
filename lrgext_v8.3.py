@@ -10,7 +10,6 @@ Usage: python script_name gene_name e.g. python lrgext_v8.1.1.py BRCA1
 
 import xml.etree.ElementTree as ET, os.path, sys, csv
 
-
 """
 Capturing file and initializing variables
 """
@@ -56,7 +55,7 @@ def handle_xml(data):
     return(root, up_anno)
 
 
-def get_gen_data(data):
+def get_gen_data(data, root):
 
     """
     Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
@@ -187,7 +186,7 @@ def get_build_info(up_anno):
     return(build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len)
 
 
-def get_exon_data(data, gstart, gend, chro, str_dir):
+def get_exon_data(data, gstart, gend, chro, str_dir, root):
 
     """
     Capture exon information for all transcripts.
@@ -205,8 +204,6 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
         
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
         tot_exons = len(exon_lst) 
-        print("\nNumber of transcripts: ", trans_number)
-        
         
         for exons in transcripts.findall('exon'):
             ex_num = exons.get('label')
@@ -241,8 +238,8 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
             
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt])
-        
-        print ("\nExon count: " + str(count_ex_tran)  )
+        print("\nTranscript: ",trans_number,  " Exons: ", str(count_ex_tran)  )
+        #print ("\nExon count: " + str(count_ex_tran)  )
         
     # Prepare lists to be printed in columns
     for group in list_all_coord:
@@ -252,7 +249,7 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
 
 # Parse xml and retrieve data for all sequence differences between build 37 and 38
 
-def get_diff_data(data):
+def get_diff_data(data, root):
     """
     Get differences between annotations
     """
@@ -277,7 +274,7 @@ def get_diff_data(data):
     return(diff_data)
 
 
-def coord2file(list_all_coord, list4bed):
+def coord2file(list_all_coord, list4bed, lrg_id):
     """
     Creates .csv, a comma separated text file with exon, transcripts, protein coordinates and a bed file
     """
@@ -308,7 +305,7 @@ def coord2file(list_all_coord, list4bed):
 
     return
 
-def diff2file (build_data, diff_data):
+def diff2file (build_data, diff_data, lrg_id):
 
     """
     Creates a a comma and tab separated file describing the build differences
@@ -381,7 +378,7 @@ def initial_tests():
     
     
 #def final_tests(tot_exons, count_ex_tran):
-def final_tests(tot_exons):
+def final_tests(tot_exons, schema,  str_dir, lrg_size_38, lrg_size_37, gene_len_38):
     """
     Tests run at the end of the program
     """
@@ -422,22 +419,21 @@ def disclaimer():
 
 def main():
     
-    (data, LRG_xml)=initial_tests()
     create_repository_file()
+    (data, LRG_xml)=initial_tests()
     (root, up_anno) = handle_xml(data)
     
     (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
-    (gene, str_dir) = get_gen_data(data)
+    (gene, str_dir) = get_gen_data(data, root)
     
     (build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len) = get_build_info(up_anno)
-    (diff_data) = get_diff_data(data)
+    (diff_data) = get_diff_data(data, root)
     
-    (list_all_coord, list4bed, tot_exons, count) = get_exon_data(data, gstart, gend, chro, str_dir)
-    coord2file(list_all_coord, list4bed)
-    diff2file(build_data, diff_data)
+    (list_all_coord, list4bed, tot_exons, count) = get_exon_data(data, gstart, gend, chro, str_dir, root)
+    coord2file(list_all_coord, list4bed, lrg_id)
+    diff2file(build_data, diff_data, lrg_id)
     
-    #final_tests(tot_exons, count_ex_tran)
-    final_tests(tot_exons)
+    final_tests(tot_exons, schema,  str_dir, lrg_size_38, lrg_size_38, gene_len_37)
     disclaimer()
     
 if __name__ == "__main__":
