@@ -9,6 +9,8 @@ Usage: python script_name gene_name e.g. python lrgext_v8.1.1.py BRCA1
 """
 
 import xml.etree.ElementTree as ET, os.path, sys, csv, getopt
+
+#enter_gene = "APC" # For testing purposes
 #lrg_list = 'gene_lrg_lst.csv'
 
 def create_repository_file():
@@ -189,10 +191,12 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
     for transcripts in root.findall('./fixed_annotation/transcript'):
         trans_number += 1
         count_ex_tran = 0
+        #count_ex_all = 0
         
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
         tot_exons = len(exon_lst) 
         
+        count_ex_all = 0
         for exons in transcripts.findall('exon'):
             ex_num = exons.get('label')
 
@@ -219,14 +223,15 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
 
                 else:
                     print ("\nProblem extracting exon information")
-
+            #count_ex_all +=  count_ex_tran
             # Create list of coordinates
         
             
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt])
-        
+            count_ex_all +=  count_ex_tran
         print("\nTranscript: ",trans_number,  " Exons: ", str(count_ex_tran)  )
+    #print ("\nExon all: " + str(count_ex_all)  ) # Testing
     # Prepare lists to be printed in columns
     for group in list_all_coord:
         pass
@@ -431,14 +436,15 @@ def disclaimer():
 
 
 def main():
-        
-    script = sys.argv[0]
-    enter_gene = sys.argv[1].upper()
+    
+    lrg_list = 'gene_lrg_lst.csv'
     path = './LRGs/'
     opath = './Outputs/'
-    lrg_list = 'gene_lrg_lst.csv'
     
-    #enter_gene = "COL1A1" # For testing purposes
+    #script = sys.argv[0]
+    #enter_gene = sys.argv[1].upper()
+    
+    
     #LRG = sys.argv[1]
 
     create_repository_file()
