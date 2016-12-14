@@ -441,8 +441,8 @@ def main():
     path = './LRGs/'
     opath = './Outputs/'
     
-    #script = sys.argv[0]
-    #enter_gene = sys.argv[1].upper()
+    script = sys.argv[0]
+    enter_gene = sys.argv[1].upper()
     
     
     #LRG = sys.argv[1]
