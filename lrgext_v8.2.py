@@ -168,35 +168,41 @@ def get_build_info(up_anno):
         # collect info on build 37
         if build.startswith('GRCh37'):
             NC_trans = annotation.get('other_id')
-            gstart = annotation.get('other_start')
-            gend = annotation.get('other_end')
+            gstart = int(annotation.get('other_start'))
+            gend = int(annotation.get('other_end'))
+            gene_len = (gend - gstart) 
+            gene_len_37 = gene_len
 
             # determine start and end of LRG
             for lrg in up_anno[1].findall('mapping/mapping_span'):
                 lrg_start = int(lrg.get('lrg_start'))
                 lrg_end = int(lrg.get('lrg_end'))
+                # check if lrg end is larger than lrg start (which it should be regardless of strand direction)
                 if lrg_end > lrg_start:
-                   lrg_size = (1+(lrg_end - lrg_start))
+                   lrg_size = (lrg_end - lrg_start)
                    lrg_size_37 = lrg_size
                 else:
-                   lrg_size = (1+(lrg_start - lrg_end))
+                   lrg_size = (lrg_start - lrg_end)
                    lrg_size_37 = lrg_size
 
         # otherwise collect info on build 38
         elif build.startswith('GRCh38'):
             NC_trans = annotation.get('other_id')
-            gstart = annotation.get('other_start')
-            gend = annotation.get('other_end')
+            gstart = int(annotation.get('other_start'))
+            gend = int(annotation.get('other_end'))
+            gene_len = (gend - gstart) 
+            gene_len_38 = gene_len
 
             # determine start and end of LRG
             for lrg in up_anno[1].findall('mapping/mapping_span'):
                 lrg_start = int(lrg.get('lrg_start'))
                 lrg_end = int(lrg.get('lrg_end'))
+                # check if lrg end is larger than lrg start (which it should be regardless of strand direction)
                 if lrg_end > lrg_start:
-                   lrg_size = (1+(lrg_end - lrg_start))
+                   lrg_size = (lrg_end - lrg_start)
                    lrg_size_38 = lrg_size
                 else:
-                   lrg_size = (1+(lrg_start - lrg_end))
+                   lrg_size = (lrg_start - lrg_end)
                    lrg_size_38 = lrg_size
 
         # if any build other than 37 or 38 is present, this script will need to be modified to compare LRG size
@@ -204,24 +210,21 @@ def get_build_info(up_anno):
             build = annotation.get('coord_system')
             chro = annotation.get('other_name')
             NC_trans = annotation.get('other_id')
-            gstart = annotation.get('other_start')
-            gend = annotation.get('other_end')
+            gstart = int(annotation.get('other_start'))
+            gend = int(annotation.get('other_end'))
+            gene_len = (gend - gstart)
             lrg_start = int(lrg.get('lrg_start'))
             lrg_end = int(lrg.get('lrg_end'))
+            lrg_size = (lrg_end - lrg_start)
 
-        # create list of variables to be exported to .txt file called build_data
-        build_data.append([build, chro, NC_trans, str(gstart), str(gend), str(lrg_start), str(lrg_end), str(lrg_size)])
+     # create list of variables to be exported to .txt file called build_data
+        build_data.append([build, chro, NC_trans, str(gstart), str(gend), str(lrg_start), str(lrg_end), str(lrg_size), str(gene_len)])
 
     # set data to be exported into columns
     for group in build_data:
         pass
 
-    return(build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size)
-
-    if lrg_size_38 == lrg_size_37:
-        print("\nLRG size is the same between GRCh37 and GRCh38")
-    else:
-        print("\nWARNING: LRG sizes differ between GRCh37 and GRCh38")
+    return(build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len)
 
 
 def get_exon_data(data, gstart, gend, chro, str_dir):
@@ -347,8 +350,8 @@ def diff2file (build_data, diff_data):
     db_diff = open(opath + lrg_id + "_" + enter_gene + "_diff.csv", "w")
 
     # Create headings
-    build_headings = ["build", "chr","NC_trans","geno_start_coord", "geno_end_coord","LRG_start", "LRG_end","LRG_size"]
-    diff_headings = ["Diff_type","LRG_start","LRG_end","Geno_coord_start","Geno_coord_end","LRG_seq_base","LRG_other_base"]
+    build_headings = ["build", "chr","NC_trans","geno_start_coord", "geno_end_coord","LRG_start", "LRG_end","LRG_size", "Gene_size"]
+    diff_headings = ["Diff_type","LRG_start","LRG_end","Geno_coord_start","Geno_coord_end","LRG_allele","Ref_allele"]
 
     # Writing a comma-separated values (.csv) 
     db_build.write("\t".join(build_headings) + "\n")
@@ -384,6 +387,17 @@ def final_tests():
         print("\nN.B. This LRG is on the REVERSE strand")
     elif str_dir == '+':
         print("\nN.B. This LRG is on the FORWARD strand")
+
+    # check the size of the LRG is the same when comparing builds (this should ALWAYS be the same)
+    if lrg_size_38 != lrg_size_37:
+        print("\nWARNING: LRG sizes differ between GRCh37 and GRCh38")
+
+    # check the gene length against LRG size, indicate that there may be sequence differences between reference genome and LRG
+    if gene_len_38 != lrg_size_38:
+        print("\nReference sequence GRCh38 is different to LRG size. Please refer to diff.csv in /Outputs folder for more information") 
+    else:
+        print("\nReference sequence GRCh38 is equal to LRG size") 
+
     return
 
 def disclaimer():
@@ -401,7 +415,7 @@ create_repository_file()
 (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
 (gene, str_dir) = get_gen_data(data)
 
-(build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size) = get_build_info(up_anno)
+(build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len) = get_build_info(up_anno)
 (diff_data) = diff_data(data)
 
 (list_all_coord, list4bed) = get_exon_data(data, gstart, gend, chro, str_dir)

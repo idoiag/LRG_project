@@ -265,7 +265,12 @@ LRG_214 = NF1: Used to test handling of more than one transcript contained withi
 - Improvement: Code simplified, code to print differences build included in new function. v.8.1
 - Bug fixed: Domain of bed files has been fixed. Usage and comments improved. v.8.1.1. 
 
+###### to be moved once finished######
+The LRG for each gene have been created using a particular Genome Reference Consortium (GRC) build. Once the LRG has been created, the start of the LRG will be at LRG position 1, whereas the LRG end position will be atthe end of the LRG. The size of the LRG will not cahnge once it has been created. However, each time a new GRC human DNA build is released, the LRG entries will be updated to include the genomic start and end co-ordinates of the gene (which may, and probably will, differ between builds) as well as creating a file that contains any sequence differences between the refernce genome and the LRG.
 
+For example, the BRCA1 gene has an LRG (292) that is 193,688 bases long. As it was created using GRCh37, there are no differences between the LRG sequence and the GRCh37 gene sequence. However, the gene co-ordinates for BRCA1 in GRCh38 have changed such that the gene is now 193,686 bases long. As the LRG sequence does not change, there must be differences between the sequence for the LRG and the gene sequnce in GRCh38. These differences are extracted from the LRG xml file into a .csv file called LRG_292_BRCA1_diff.csv. In this file (as in the table on the LRG webpage), the "LRG allele" is the base/sequence present in the LRG and the "Reference allele" is the base/sequence present in the Reference sequence (in this case, the sequence from GRCh38).
+N.B. As more GRCh buids are released, the "reference allele" will change according to which build is being used. The LRG should never change.
+######
 
 #### DISCLAIMER /IGP, Done/
 Please cite this software as: 'Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, Faculty of Medicine and Human Sciences, The University of Manchester.' or successor references as defined by the authors.
