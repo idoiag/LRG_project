@@ -18,11 +18,12 @@ Capturing file and initializing variables
 """
 
 #script = sys.argv[0]
-#LRG = sys.argv[1]
+LRG = sys.argv[1]
 path = './LRGs/'
 opath = './Outputs/'
 
 enter_gene = sys.argv[1].upper()
+#enter_gene = "APC" # For testing purposes
 
 def create_repository_file():
 
@@ -239,21 +240,26 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
 
     # Loop to extract information when there is more than 1 transcript
     for transcripts in root.findall('./fixed_annotation/transcript'):
+        
         trans_number += 1
-
+        count_ex_tran = 0 # to count exons per transcript
+        count_ex_all = 0 # to count all exons. Testing
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
+        num_exons = len(exon_lst) #Necessary any longer?
         print("\nNumber of transcripts: ", trans_number)
-        print('\nExon count: ', len(exon_lst))
 
         for exons in transcripts.findall('exon'):
+            
             ex_num = exons.get('label')
-
+            
             # Extract transcript, protein and exon coordinates (in this order)
             # Print "N/A" if protein coordinates are not available
             start_ex_pt = "N/A"
             end_ex_pt = "N/A"
-
+            count_ex_tran +=1  # count the number of exons per transcript
+            
             for coord in exons.findall('coordinates'):
+                
                 if (coord.get('coord_system').find("t")!=-1):
                     start_ex_tr = coord.get('start')
                     end_ex_tr = coord.get('end')
@@ -270,11 +276,17 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
 
                 else:
                     print ("\nProblem extracting exon information")
-
+            
+            count_ex_all += 1 #Testing
+            #count_ex_all += count_ex_all    
+            
             # Create list of coordinates
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt])
-
+        
+        print ("\nExon count: " + str(count_ex_tran)  )
+        #print ("\nExon all: " + str(count_ex_all)  )
+        
     # Prepare lists to be printed in columns
     for group in list_all_coord:
         pass
