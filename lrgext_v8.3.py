@@ -14,13 +14,13 @@ import xml.etree.ElementTree as ET, os.path, sys, csv
 Capturing file and initializing variables
 """
 
-script = sys.argv[0]
+#script = sys.argv[0]
 #LRG = sys.argv[1]
 path = './LRGs/'
 opath = './Outputs/'
 
-enter_gene = sys.argv[1].upper()
-#enter_gene = "APC" # For testing purposes
+#enter_gene = sys.argv[1].upper()
+enter_gene = "APC" # For testing purposes
 
 def create_repository_file():
 
@@ -200,12 +200,13 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
     for transcripts in root.findall('./fixed_annotation/transcript'):
         trans_number += 1
         count_ex_tran = 0 # to count exons per transcript
-        count_ex_all = 0 # to count all exons. Testing
+        #count_ex_all = 0 # to count all exons. Testing
         
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
         tot_exons = len(exon_lst) 
         
         for exons in transcripts.findall('exon'):
+            #count_ex_all = 0 Testing
             ex_num = exons.get('label')
 
             # Extract transcript, protein and exon coordinates (in this order)
@@ -233,13 +234,15 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
                 else:
                     print ("\nProblem extracting exon information")
 
+            #count_ex_all += count_ex_tran # Testing
             # Create list of coordinates
         
             
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt])
+            #count_ex_all += count_ex_tran
         print("\nTranscript: ",trans_number,  " Exons: ", str(count_ex_tran)  )
-        #print ("\nExon count: " + str(count_ex_tran)  )
+        #print ("\nExon all: " + str(count_ex_all)  ) # Testing
         
     # Prepare lists to be printed in columns
     for group in list_all_coord:
@@ -415,7 +418,6 @@ def disclaimer():
     references as defined by the authors.\n""")
     return
 
-#### MAIN information ####
 
 def main():
     
@@ -440,4 +442,3 @@ if __name__ == "__main__":
     main()
 
 
-### End of Main ###

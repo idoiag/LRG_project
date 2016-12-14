@@ -17,8 +17,8 @@ import xml.etree.ElementTree as ET, os.path, sys, csv
 Capturing file and initializing variables
 """
 
-#script = sys.argv[0]
-LRG = sys.argv[1]
+script = sys.argv[0]
+#LRG = sys.argv[1]
 path = './LRGs/'
 opath = './Outputs/'
 
@@ -243,7 +243,6 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
         
         trans_number += 1
         count_ex_tran = 0 # to count exons per transcript
-        count_ex_all = 0 # to count all exons. Testing
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
         num_exons = len(exon_lst) #Necessary any longer?
         print("\nNumber of transcripts: ", trans_number)
@@ -277,15 +276,12 @@ def get_exon_data(data, gstart, gend, chro, str_dir):
                 else:
                     print ("\nProblem extracting exon information")
             
-            count_ex_all += 1 #Testing
-            #count_ex_all += count_ex_all    
             
             # Create list of coordinates
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt])
         
         print ("\nExon count: " + str(count_ex_tran)  )
-        #print ("\nExon all: " + str(count_ex_all)  )
         
     # Prepare lists to be printed in columns
     for group in list_all_coord:
