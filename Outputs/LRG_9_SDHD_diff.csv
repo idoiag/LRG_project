@@ -1,1 +1,3 @@
-Diff_type,LRG_start,LRG_end,Geno_coord_start,Geno_coord_end,LRG_allele,Ref_allele
+Build,Diff_type,LRG_start,LRG_end,Geno_coord_start,Geno_coord_end,LRG_allele,Ref_allele
+GRCh37.p13,lrg_ins,32041,32041,111984610,111984611,T,-
+GRCh37.p13,mismatch,38267,38267,111990836,111990836,G,C
