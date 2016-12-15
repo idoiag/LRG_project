@@ -410,8 +410,8 @@ def disclaimer():
 
 def main():
     script = sys.argv[0]
-    #enter_gene = sys.argv[1].upper()
-    enter_gene = "APC" # For testing purposes
+    enter_gene = sys.argv[1].upper()
+    #enter_gene = "APC" # For testing purposes
     
     path = './LRGs/'
     opath = './Outputs/'
