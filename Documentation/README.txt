@@ -52,7 +52,7 @@ but as most users of the script will be most likely to know the HGNC gene name b
 script can be used to find out a) if an LRG exists within the LRGs directory for a given HGNC gene and b) 
 what the LRG ID is for a given gene name. Example: 
 
-$ python lrgext.py [HGNC gene name]
+$ python lrgext.py -g [HGNC gene name]
 
 lrgext will extract build, gene, transcript, exon information from a file in LRG xml format 
 producing different output files:
