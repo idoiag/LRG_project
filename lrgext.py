@@ -392,27 +392,54 @@ def main(argv):
     
     ## GET OPTS ##
     enter_gene = ''
+    path = ''
+    opath = ''
+    lrg_list = ''
+    
     try:
-        opts, args = getopt.getopt(argv,"hg:",["gene="])
+        opts, args = getopt.getopt(argv,"si:o:g:l:",["gene=", "ifile=", 'ofile=, lrg_list='])
     except getopt.GetoptError:
-        print ('lrgext.py  -g <gene> ')
+        print ('lrgext.py -g <gene> -i <inputfile> -o <outputfile> -s for settings' )
         sys.exit(2)
+    
     for opt, arg in opts:
-        if opt == '-h':
-            print ('lrgext.py -g <gene> ')
+        if opt == '-s':  
+            print ("default settings: inputfile=./LRGs/, output=./Outputs/, LRG list =gene_lrg_lst.csv ")
             sys.exit()
         
         elif opt in ('-g', "--gene"):
             enter_gene = arg
-    
+        elif opt in ("-i", "--ifile"):
+            path = arg
+        elif opt in ("-o", "--ofile"):
+            opath = arg
+        elif opt in ("-l", "--lrg"):
+            lrg_list = arg
     if enter_gene == '':
-        print ("Provide name of gene -g <gene>")
+        print ("Provide name of gene -g <gene>, use -i <inputfile> -o <output> -l <LRG list> -s for settings")
     else:
         print ('Gene= ', enter_gene)  
     
-    path = './LRGs/'
-    opath = './Outputs/'
-    lrg_list = 'gene_lrg_lst.csv'
+    if path == '':    
+        path = './LRGs/'
+        print ('Default LRG_folder=', path)
+    else: 
+        print ('LRG_folder=', path)
+    
+    if opath == '':    
+        opath = './Outputs/'
+        print ('Default output folder=', opath)
+    else: 
+        print ('Output folder=', opath)
+    
+    if lrg_list == '':    
+        lrg_list = 'gene_lrg_lst.csv'
+        print ('Default LRG list=', lrg_list)
+    else: 
+        print ('LRG list=', lrg_list)    
+        
+
+    #lrg_list = 'gene_lrg_lst.csv'
     enter_gene=enter_gene.upper()
     
     create_repository_file(path, lrg_list)

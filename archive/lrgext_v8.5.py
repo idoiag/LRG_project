@@ -6,7 +6,7 @@ lrgext program extracts build, gene, transcript, exon information from a file in
 Data is exported to comma seperated values (.csv) and tab separated file (as .txt).
 A bed file will also be created.
 The script supports LRG files with more than one transcript.
-Usage: python script_name gene_name e.g. python lrgext_v8.1.1.py BRCA1
+Usage: python lrgext.py -g <gene>
 """
 
 def create_repository_file(path, lrg_list):
@@ -40,7 +40,6 @@ def handle_xml(data):
     return(root, up_anno)
 
 def get_gen_data(data, root, lrg_id):
-
     """
     Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
     """
@@ -62,9 +61,7 @@ def get_gen_data(data, root, lrg_id):
 
     return (gene, str_dir)
 
-
 def get_background(root):
-
     """
     Get gene background of the LRG file, including xml schema, LRG ID, HGVS ID, source of sequence, transcript, coordinate system.
     Also capture start and end co-ordinates and strand. 
@@ -92,7 +89,6 @@ def get_background(root):
         print ("\nSchema version: " + schema)
         #print ("\nLRG ID: " + lrg_id)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
-
 
 def get_build_info(up_anno):
 
@@ -170,7 +166,6 @@ def get_build_info(up_anno):
 
     return(build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len)
 
-
 def get_exon_data(data, gstart, gend, chro, str_dir, root):
 
     """
@@ -232,11 +227,9 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
 
     return (list_all_coord, list4bed, tot_exons, count_ex_tran, count_ex_all)
 
-# Parse xml and retrieve data for all sequence differences between build 37 and 38
-
 def get_diff_data(data, root):
     """
-    Get differences between annotations
+    Parse xml and retrieve data for all sequence differences between build 37 and 38
     """
     diff_data = []
 
@@ -259,7 +252,6 @@ def get_diff_data(data, root):
         pass
 
     return(diff_data)
-
 
 def coord2file(opath, enter_gene, list_all_coord, list4bed, lrg_id):
     """
@@ -293,7 +285,6 @@ def coord2file(opath, enter_gene, list_all_coord, list4bed, lrg_id):
     return
 
 def diff2file (opath, enter_gene, build_data, diff_data, lrg_id):
-
     """
     Creates a a comma and tab separated file describing the build differences
     """
@@ -325,7 +316,6 @@ def diff2file (opath, enter_gene, build_data, diff_data, lrg_id):
     # Message for user that output files have been successfully created and where to find them
     print ("\nOutput files have been saved in /Outputs!")
 
-
 def initial_tests(path, enter_gene, lrg_list):
     """
     Run initial tests to check the software and file before execution:
@@ -341,7 +331,7 @@ def initial_tests(path, enter_gene, lrg_list):
         # If gene name found, capture the LRG_ID from the second column (row[1)]
         for row in csvfileReader:
             found = False
-            if enter_gene in row[0]:
+            if enter_gene == row[0]:
                 found = True
                 LRG_xml = row[1]
                 # if the gene name entered is in the first entry for a row, exit the loop
@@ -363,8 +353,6 @@ def initial_tests(path, enter_gene, lrg_list):
 
     return (data, LRG_xml)
     
-    
-#def final_tests(tot_exons, count_ex_tran):
 def final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_37, gene_len_38, count_ex_all ):
     """
     Tests run at the end of the program
@@ -402,24 +390,25 @@ references as defined by the authors.\n""")
 
 def main(argv):
     
-    enter_gene = ''
-    lrg = ''
-    
     ## GET OPTS ##
+    enter_gene = ''
     try:
-        opts, args = getopt.getopt(argv,"h:s:g:",["script=","gene="])
+        opts, args = getopt.getopt(argv,"hg:",["gene="])
     except getopt.GetoptError:
-        print ('lrgext.x.py -s <script> -g <gene> ')
+        print ('lrgext.py  -g <gene> ')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print ('lrgext.x.py -s <script> -g <gene> ')
+            print ('lrgext.py -g <gene> ')
             sys.exit()
-        elif opt in ("-s", "--script"):
-            script = arg
-        elif opt in ("-g", "--gene"):
-            enter_gene = arg
         
+        elif opt in ('-g', "--gene"):
+            enter_gene = arg
+    
+    if enter_gene == '':
+        print ("Provide name of gene -g <gene>")
+    else:
+        print ('Gene= ', enter_gene)  
     
     path = './LRGs/'
     opath = './Outputs/'
