@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
-import xml.etree.ElementTree as ET, os.path, sys, csv
-
+import xml.etree.ElementTree as ET, os.path, sys, csv, getopt
 """
 Authors: Idoia Gomez-Paramio and Verity Fryer 2016
 lrgext program extracts build, gene, transcript, exon information from a file in LRG format given a HGVS gene (case insensitive).
 Data is exported to comma seperated values (.csv) and tab separated file (as .txt).
 A bed file will also be created.
 The script supports LRG files with more than one transcript.
-Usage: python script_name gene_name e.g. python lrgext_v8.1.1.py BRCA1
+Usage: python lrgext.py -g <gene>
 """
 
-
 def create_repository_file(path, lrg_list):
-
     """
     This function will parse all .xml files in LRGs directory ("LRGs") and create a csv file.
     This file ("gene_lrg_lst.csv") lists all existing .xml files within the directory, and the gene name associated with the LRG
@@ -33,7 +30,6 @@ def create_repository_file(path, lrg_list):
     return
 
 def handle_xml(data):
-
     """
     Function to parse .xml file with 'xml.etree.ElementTree'
     """
@@ -43,16 +39,15 @@ def handle_xml(data):
     up_anno = tree.getroot()[1]
     return(root, up_anno)
 
-
-def get_gen_data(data, root):
-
+def get_gen_data(data, root, lrg_id):
     """
     Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
     """
 
     # Extract name of gene
     gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
-    print('\nGene: ', gene)
+    #print('\nGene: ', gene)
+    print ("\nLRG ID: ", lrg_id, ' Gene: ', gene)
 
     # Determine the strand direction of gene, forward strand or reverse strand
     for annotation in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span'):
@@ -66,9 +61,7 @@ def get_gen_data(data, root):
 
     return (gene, str_dir)
 
-
 def get_background(root):
-
     """
     Get gene background of the LRG file, including xml schema, LRG ID, HGVS ID, source of sequence, transcript, coordinate system.
     Also capture start and end co-ordinates and strand. 
@@ -94,9 +87,8 @@ def get_background(root):
                 strand_cs = coordinates.get('strand')
 
         print ("\nSchema version: " + schema)
-        print ("\nLRG ID: " + lrg_id)
+        #print ("\nLRG ID: " + lrg_id)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
-
 
 def get_build_info(up_anno):
 
@@ -105,7 +97,7 @@ def get_build_info(up_anno):
     """
 
     build_lst = up_anno[1].findall('mapping')
-    print('\nNumber of GRCh builds: ', len(build_lst), '\n')
+    print('\nNumber of GRCh builds: ', len(build_lst), "\n")
 
     build_data = []
 
@@ -174,7 +166,6 @@ def get_build_info(up_anno):
 
     return(build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len)
 
-
 def get_exon_data(data, gstart, gend, chro, str_dir, root):
 
     """
@@ -229,7 +220,6 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
 
         count_ex_all += count_ex_tran # all all exons from all transcripts
         print("Transcript: ",trans_number,  " Exons: ", str(count_ex_tran)  )
-    #print ("\nExon all: " + str(count_ex_all)  ) # Testing
 
     # Prepare lists to be printed in columns
     for group in list_all_coord:
@@ -237,11 +227,9 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
 
     return (list_all_coord, list4bed, tot_exons, count_ex_tran, count_ex_all)
 
-# Parse xml and retrieve data for all sequence differences between build 37 and 38
-
 def get_diff_data(data, root):
     """
-    Get differences between annotations
+    Parse xml and retrieve data for all sequence differences between build 37 and 38
     """
     diff_data = []
 
@@ -264,7 +252,6 @@ def get_diff_data(data, root):
         pass
 
     return(diff_data)
-
 
 def coord2file(opath, enter_gene, list_all_coord, list4bed, lrg_id):
     """
@@ -298,7 +285,6 @@ def coord2file(opath, enter_gene, list_all_coord, list4bed, lrg_id):
     return
 
 def diff2file (opath, enter_gene, build_data, diff_data, lrg_id):
-
     """
     Creates a a comma and tab separated file describing the build differences
     """
@@ -330,8 +316,7 @@ def diff2file (opath, enter_gene, build_data, diff_data, lrg_id):
     # Message for user that output files have been successfully created and where to find them
     print ("\nOutput files have been saved in /Outputs!")
 
-
-def initial_tests(path, enter_gene):
+def initial_tests(path, enter_gene, lrg_list):
     """
     Run initial tests to check the software and file before execution:
     1. The 'gene_lrg_lst.csv' will be searched for the gene name entered.
@@ -340,19 +325,19 @@ def initial_tests(path, enter_gene):
     """
 
     # Checking if gene is in list therefore if .xml file exists, capture name of LRG.xml file
-    with open('gene_lrg_lst.csv','r') as f:
+    with open(lrg_list,'r') as f:
         csvfileReader = csv.reader(f)
         # Iterate through .csv file and check first column (row[0]) in each row for gene name
         # If gene name found, capture the LRG_ID from the second column (row[1)]
         for row in csvfileReader:
-            found = 'No'
-            if enter_gene in row[0]:
-                found = 'Yes'
+            found = False
+            if enter_gene == row[0]:
+                found = True
                 LRG_xml = row[1]
                 # if the gene name entered is in the first entry for a row, exit the loop
                 break
 
-        if found == 'No':
+        if found == False:
             # If no LRG.xml found for the gene entered, display an error message and exit the script immediately
             print("\nNo LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org\n")
             exit()
@@ -368,8 +353,6 @@ def initial_tests(path, enter_gene):
 
     return (data, LRG_xml)
     
-    
-#def final_tests(tot_exons, count_ex_tran):
 def final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_37, gene_len_38, count_ex_all ):
     """
     Tests run at the end of the program
@@ -395,32 +378,49 @@ def final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_
     ### Assert functions used for debugging ###
     assert (tot_exons == count_ex_all), "Problem with exon number" 
     assert (lrg_size_38 == lrg_size_37), "Warning: LRG sizes differ between builds"  
-    assert (gene_len_38 == lrg_size_38), "GRCh38 reference sequence size differ from LRG size"
 
     return
 
 def disclaimer():
     print ("""\nPlease cite this software as: Gomez-Paramio, I. and Fryer, V. (2016), 'lrgext', Software, 
-    Faculty of Medicine and Human Sciences, The University of Manchester.' or successor 
-    references as defined by the authors.\n""")
+Faculty of Medicine and Human Sciences, The University of Manchester.' or successor 
+references as defined by the authors.\n""")
+    
     return
 
-
-def main():
-    script = sys.argv[0]
-    enter_gene = sys.argv[1].upper()
-    #enter_gene = "APC" # For testing purposes
+def main(argv):
+    
+    ## GET OPTS ##
+    enter_gene = ''
+    try:
+        opts, args = getopt.getopt(argv,"hg:",["gene="])
+    except getopt.GetoptError:
+        print ('lrgext.py  -g <gene> ')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print ('lrgext.py -g <gene> ')
+            sys.exit()
+        
+        elif opt in ('-g', "--gene"):
+            enter_gene = arg
+    
+    if enter_gene == '':
+        print ("Provide name of gene -g <gene>")
+    else:
+        print ('Gene= ', enter_gene)  
     
     path = './LRGs/'
     opath = './Outputs/'
     lrg_list = 'gene_lrg_lst.csv'
+    enter_gene=enter_gene.upper()
     
     create_repository_file(path, lrg_list)
-    (data, LRG_xml)=initial_tests(path, enter_gene)
+    (data, LRG_xml)=initial_tests(path, enter_gene, lrg_list)
     (root, up_anno) = handle_xml(data)
     
     (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
-    (gene, str_dir) = get_gen_data(data, root)
+    (gene, str_dir) = get_gen_data(data, root, lrg_id)
     
     (build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len) = get_build_info(up_anno)
     (diff_data) = get_diff_data(data, root)
@@ -433,6 +433,6 @@ def main():
     disclaimer()
     
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
 
 
