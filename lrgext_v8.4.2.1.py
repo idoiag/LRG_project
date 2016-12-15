@@ -44,7 +44,7 @@ def handle_xml(data):
     return(root, up_anno)
 
 
-def get_gen_data(data, root, lrg_id):
+def get_gen_data(data, root):
 
     """
     Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
@@ -52,8 +52,7 @@ def get_gen_data(data, root, lrg_id):
 
     # Extract name of gene
     gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
-    #print('\nGene: ', gene)
-    print ("\nLRG ID: ", lrg_id, ' Gene: ', gene)
+    print('\nGene: ', gene)
 
     # Determine the strand direction of gene, forward strand or reverse strand
     for annotation in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span'):
@@ -95,7 +94,7 @@ def get_background(root):
                 strand_cs = coordinates.get('strand')
 
         print ("\nSchema version: " + schema)
-        #print ("\nLRG ID: " + lrg_id)
+        print ("\nLRG ID: " + lrg_id)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
 
@@ -106,7 +105,7 @@ def get_build_info(up_anno):
     """
 
     build_lst = up_anno[1].findall('mapping')
-    print('\nNumber of GRCh builds: ', len(build_lst), "\n")
+    print('\nNumber of GRCh builds: ', len(build_lst), '\n')
 
     build_data = []
 
@@ -332,7 +331,7 @@ def diff2file (opath, enter_gene, build_data, diff_data, lrg_id):
     print ("\nOutput files have been saved in /Outputs!")
 
 
-def initial_tests(path, enter_gene, lrg_list):
+def initial_tests(path, enter_gene):
     """
     Run initial tests to check the software and file before execution:
     1. The 'gene_lrg_lst.csv' will be searched for the gene name entered.
@@ -341,19 +340,19 @@ def initial_tests(path, enter_gene, lrg_list):
     """
 
     # Checking if gene is in list therefore if .xml file exists, capture name of LRG.xml file
-    with open(lrg_list,'r') as f:
+    with open('gene_lrg_lst.csv','r') as f:
         csvfileReader = csv.reader(f)
         # Iterate through .csv file and check first column (row[0]) in each row for gene name
         # If gene name found, capture the LRG_ID from the second column (row[1)]
         for row in csvfileReader:
-            found = False
+            found = 'No'
             if enter_gene in row[0]:
-                found = True
+                found = 'Yes'
                 LRG_xml = row[1]
                 # if the gene name entered is in the first entry for a row, exit the loop
                 break
 
-        if found == False:
+        if found == 'No':
             # If no LRG.xml found for the gene entered, display an error message and exit the script immediately
             print("\nNo LRG.xml can be found for gene entered.\nCheck that gene has an associated LRG at www.lrg-sequence.org\n")
             exit()
@@ -396,7 +395,7 @@ def final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_
     ### Assert functions used for debugging ###
     assert (tot_exons == count_ex_all), "Problem with exon number" 
     assert (lrg_size_38 == lrg_size_37), "Warning: LRG sizes differ between builds"  
-    #assert (gene_len_38 == lrg_size_38), "GRCh38 reference sequence size differ from LRG size"
+    assert (gene_len_38 == lrg_size_38), "GRCh38 reference sequence size differ from LRG size"
 
     return
 
@@ -417,11 +416,11 @@ def main():
     lrg_list = 'gene_lrg_lst.csv'
     
     create_repository_file(path, lrg_list)
-    (data, LRG_xml)=initial_tests(path, enter_gene, lrg_list)
+    (data, LRG_xml)=initial_tests(path, enter_gene)
     (root, up_anno) = handle_xml(data)
     
     (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
-    (gene, str_dir) = get_gen_data(data, root, lrg_id)
+    (gene, str_dir) = get_gen_data(data, root)
     
     (build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len) = get_build_info(up_anno)
     (diff_data) = get_diff_data(data, root)

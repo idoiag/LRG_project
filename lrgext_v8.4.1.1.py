@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import xml.etree.ElementTree as ET, os.path, sys, csv
+import xml.etree.ElementTree as ET, os.path, sys, csv,getopt
 
 """
 Authors: Idoia Gomez-Paramio and Verity Fryer 2016
@@ -44,7 +44,7 @@ def handle_xml(data):
     return(root, up_anno)
 
 
-def get_gen_data(data, root, lrg_id):
+def get_gen_data(data, root):
 
     """
     Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
@@ -52,8 +52,7 @@ def get_gen_data(data, root, lrg_id):
 
     # Extract name of gene
     gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
-    #print('\nGene: ', gene)
-    print ("\nLRG ID: ", lrg_id, ' Gene: ', gene)
+    print('\nGene: ', gene)
 
     # Determine the strand direction of gene, forward strand or reverse strand
     for annotation in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span'):
@@ -95,7 +94,7 @@ def get_background(root):
                 strand_cs = coordinates.get('strand')
 
         print ("\nSchema version: " + schema)
-        #print ("\nLRG ID: " + lrg_id)
+        print ("\nLRG ID: " + lrg_id)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
 
@@ -106,7 +105,7 @@ def get_build_info(up_anno):
     """
 
     build_lst = up_anno[1].findall('mapping')
-    print('\nNumber of GRCh builds: ', len(build_lst), "\n")
+    print('\nNumber of GRCh builds: ', len(build_lst))
 
     build_data = []
 
@@ -191,10 +190,10 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
     for transcripts in root.findall('./fixed_annotation/transcript'):
         trans_number += 1
         count_ex_tran = 0 # to count exons per transcript
-
+        
         exon_lst = root.findall('./fixed_annotation/transcript/exon')
-        tot_exons = len(exon_lst)
-
+        tot_exons = len(exon_lst) 
+        
         for exons in transcripts.findall('exon'):
             ex_num = exons.get('label')
 
@@ -202,9 +201,9 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
             # Print "N/A" if protein coordinates are not available
             start_ex_pt = "N/A"
             end_ex_pt = "N/A"
-
+            
             count_ex_tran +=1
-
+            
             for coord in exons.findall('coordinates'):
                 if (coord.get('coord_system').find("t")!=-1):
                     start_ex_tr = coord.get('start')
@@ -224,14 +223,14 @@ def get_exon_data(data, gstart, gend, chro, str_dir, root):
                     print ("\nProblem extracting exon information")
 
             # Create list of coordinates
-
+            
             list4bed.append([chro, g_start_ex, g_end_ex, str_dir, str(trans_number)])
             list_all_coord.append([str(trans_number), ex_num, start_ex, end_ex, start_ex_tr, end_ex_tr, start_ex_pt,end_ex_pt])
-
+        
         count_ex_all += count_ex_tran # all all exons from all transcripts
-        print("Transcript: ",trans_number,  " Exons: ", str(count_ex_tran)  )
+        print("\nTranscript: ",trans_number,  " Exons: ", str(count_ex_tran)  )
     #print ("\nExon all: " + str(count_ex_all)  ) # Testing
-
+        
     # Prepare lists to be printed in columns
     for group in list_all_coord:
         pass
@@ -246,19 +245,17 @@ def get_diff_data(data, root):
     """
     diff_data = []
 
-    for mapping in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping'):
-        build = mapping.get('coord_system')
-        for diff in mapping.findall('mapping_span/diff'):
-            diff_type = diff.get('type')
-            diff_lrg_start = diff.get('lrg_start')
-            diff_lrg_end = diff.get('lrg_end')
-            diff_gen_start = diff.get('other_start')
-            diff_gen_end = diff.get('other_end')
-            lrg_seq_base = diff.get('lrg_sequence')
-            other_seq_base = diff.get('other_sequence')
+    for diff in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span/diff'):
+        diff_type = diff.get('type')
+        diff_lrg_start = diff.get('lrg_start')
+        diff_lrg_end = diff.get('lrg_end')
+        diff_gen_start = diff.get('other_start')
+        diff_gen_end = diff.get('other_end')
+        lrg_seq_base = diff.get('lrg_sequence')
+        other_seq_base = diff.get('other_sequence')
 
-            # create list of differences between builds data
-            diff_data.append([build,diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base])
+        # create list of differences between builds data
+        diff_data.append([diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base])
 
     # Data to be returned in columns in .csv file
     for group in diff_data:
@@ -271,7 +268,7 @@ def coord2file(opath, enter_gene, list_all_coord, list4bed, lrg_id):
     """
     Creates .csv, a comma separated text file with exon, transcripts, protein coordinates and a bed file
     """
-
+    
     # Open file in read/write format. If one doesn't exist, it  will create a new one
     db = open(opath + lrg_id + "_" + enter_gene + "_coord.txt","w")
     db_csv = open(opath + lrg_id + "_" + enter_gene + "_coord.csv","w")
@@ -310,14 +307,14 @@ def diff2file (opath, enter_gene, build_data, diff_data, lrg_id):
 
     # Create headings
     build_headings = ["build", "chr","NC_trans","geno_start_coord", "geno_end_coord","LRG_start", "LRG_end","LRG_size", "Gene_size"]
-    diff_headings = ["Build","Diff_type","LRG_start","LRG_end","Geno_coord_start","Geno_coord_end","LRG_allele","Ref_allele"]
+    diff_headings = ["Diff_type","LRG_start","LRG_end","Geno_coord_start","Geno_coord_end","LRG_allele","Ref_allele"]
 
-    # Writing a comma-separated values (.csv)
+    # Writing a comma-separated values (.csv) 
     db_build.write("\t".join(build_headings) + "\n")
     for group in build_data:
         db_build.write("\t".join(group) + "\n")
 
-    # Writing a comma-separated values (.csv)
+    # Writing a comma-separated values (.csv) 
     db_diff.write(",".join(diff_headings) + "\n")
     for group in diff_data:
         db_diff.write(",".join(group) + "\n")
@@ -347,7 +344,7 @@ def initial_tests(path, enter_gene, lrg_list):
         # If gene name found, capture the LRG_ID from the second column (row[1)]
         for row in csvfileReader:
             found = False
-            if enter_gene in row[0]:
+            if enter_gene == row[0]:
                 found = True
                 LRG_xml = row[1]
                 # if the gene name entered is in the first entry for a row, exit the loop
@@ -383,20 +380,22 @@ def final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_
 
     # Check the strand direction and warn if in reverse.
     if str_dir == "-":
-        print("\nN.B.\t-This LRG is on the REVERSE strand")
+        print("\nN.B. This LRG is on the REVERSE strand")
     elif str_dir == '+':
-        print("\nN.B.\t-This LRG is on the FORWARD strand")
+        print("\nN.B. This LRG is on the FORWARD strand")
 
     # check the size of the LRG is the same when comparing builds (this should ALWAYS be the same)
+    if lrg_size_38 != lrg_size_37:
+        print("\nWARNING: LRG sizes differ between GRCh37 and GRCh38")
+
+    # check the gene length against LRG size, indicate that there may be sequence differences between reference genome and LRG
     if gene_len_38 != lrg_size_38:
-        print("\t-GRCh38 reference sequence size differ from LRG size. Please refer to diff.csv in /Outputs folder for more information") 
+        print("\nReference sequence GRCh38 is different to LRG size. Please refer to diff.csv in /Outputs folder for more information") 
     else:
-        print("\t-GRCh38 reference sequence and LRG have same size") 
-    
-    ### Assert functions used for debugging ###
-    assert (tot_exons == count_ex_all), "Problem with exon number" 
-    assert (lrg_size_38 == lrg_size_37), "Warning: LRG sizes differ between builds"  
-    #assert (gene_len_38 == lrg_size_38), "GRCh38 reference sequence size differ from LRG size"
+        print("\nReference sequence GRCh38 is equal to LRG size") 
+        
+    assert (tot_exons == count_ex_all), "Problem with exon number"
+        
 
     return
 
@@ -407,11 +406,34 @@ def disclaimer():
     return
 
 
-def main():
-    script = sys.argv[0]
-    enter_gene = sys.argv[1].upper()
-    #enter_gene = "APC" # For testing purposes
+def main(argv):
+    #script = sys.argv[0]
+    #enter_gene = sys.argv[1].upper()
     
+    #script = sys.argv[0]
+    #script = ''
+    enter_gene = ''
+    lrg = ''
+    try:
+        opts, args = getopt.getopt(argv,"hl:s:g:",['lrg=',"script=","gene="])
+    except getopt.GetoptError:
+        print ('lrgext.x.py -s <script> -g <gene> -l <lrg>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print ('lrgext.x.py -s <script> -g <gene> -l <lrg>')
+            sys.exit()
+        elif opt in ("-s", "--script"):
+            script = arg
+        elif opt in ("-g", "--gene"):
+            enter_gene = arg
+        elif opt in ("-l", "--lrg"):
+            lrg = arg
+            
+    #print ('Script is "', script)
+    print ('Gene is "', enter_gene)
+    #enter_gene = "APC" # For testing purposes
+    enter_gene=enter_gene.upper()
     path = './LRGs/'
     opath = './Outputs/'
     lrg_list = 'gene_lrg_lst.csv'
@@ -421,7 +443,7 @@ def main():
     (root, up_anno) = handle_xml(data)
     
     (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
-    (gene, str_dir) = get_gen_data(data, root, lrg_id)
+    (gene, str_dir) = get_gen_data(data, root)
     
     (build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len) = get_build_info(up_anno)
     (diff_data) = get_diff_data(data, root)
@@ -434,6 +456,6 @@ def main():
     disclaimer()
     
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
 
 

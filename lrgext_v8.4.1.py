@@ -398,7 +398,6 @@ def final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_
     ### Assert functions used for debugging ###
     assert (tot_exons == count_ex_all), "Problem with exon number" 
     assert (lrg_size_38 == lrg_size_37), "Warning: LRG sizes differ between builds"  
-    assert (gene_len_38 == lrg_size_38), "GRCh38 reference sequence size differ from LRG size"
 
     return
 
@@ -411,8 +410,8 @@ def disclaimer():
 
 def main():
     script = sys.argv[0]
-    #enter_gene = sys.argv[1].upper()
-    enter_gene = "APC" # For testing purposes
+    enter_gene = sys.argv[1].upper()
+    #enter_gene = "APC" # For testing purposes
     
     path = './LRGs/'
     opath = './Outputs/'
