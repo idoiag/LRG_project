@@ -1,3 +1,0 @@
-build	chr	NC_trans	geno_start_coord	geno_end_coord	LRG_start	LRG_end	LRG_size	Gene_size
-GRCh37.p13	17	NC_000017.10	48259457	48284000	1	24544	24543	24543
-GRCh38.p7	17	NC_000017.11	50182096	50206639	1	24544	24543	24543
