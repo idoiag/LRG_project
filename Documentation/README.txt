@@ -178,43 +178,43 @@ The program runs through the following steps:
 Aim: Create a file listing all LRG files that exist in the LRG directory and their associated gene names. This enables the user to enter the gene name at the command line but the program can continue with the LRG id.
 Function: create_repository_file()
 
-2. Initial tests:
-Aim: Run initial tests to check for the existence of an LRG file for the given gene name.
-It also checks the consistency and readability of the file.
-Function: initial_tests()
-
-3. Handle xml structure:
+2. Handle xml structure:
 Aim: Use 'xml.etree.ElementTreee' to extract information from xml files
 Function: (root, up_anno) = handle_xml(data)
 
-4. Get gene and strand information:
+3. Get gene and strand information:
 Aim: Extract HGVS gene name, and tag strand as forward (+) or reverse (-)
 Function: (gene, str_dir) = get_gen_data(data)
 
-5. Getting background information:
+4. Getting background information:
 Aim: Get background information about the gene
 Function: (schema, lrg_id,  hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) =
 get_background(root)
 
-6. Get information about the different builds:
+5. Get information about the different builds:
 Aim: Get build information, including coordinates, chromosome, transcript,and genomic start and end. It will provide "N/A", when protein coordinates are not available
 Function: (coord, chro, NC_trans, gstart, gend) = get_build_info(up_anno)
 
-7. Get information about the exon:
+6. Get information about the exon:
 Aim: Get information about the exon for the different transcripts, including number of exons, exons coordinates in the LRG system regarding the cdna, transcript and protein.
 Function: (list_all_coord, list4bed)= get_exon_data(data, gstart, gend, chro, str_dir)
 
-8. Get differences between LRG sequence and GRCh builds
+7. Get differences between LRG sequence and GRCh sequences
 Aim: Extract information regarding any differences between the LRG sequene and the reference sequence (which can be any of several reference sequences/builds and more than one comparison may be available)
 Function:(diff_data) = diff_data(data)
 
-9. Save exon, transcript and protein coordinates to file
+8. Save exon, transcript and protein coordinates to file
 Aim: Create comma seperated (.csv) and a tab separated (.txt) file with exon, transcripts and protein coordinates, plus a bed file
 Function: output2file(list_all_coord, list4bed)
 
-10. Save build information and differences to file
+9. Save build information and differences to file
 Aim: Create a comma and a tab separated file highlighting genomic o-ordinates between builds and any gene size or sequence differences
 Function:diff2file(build_data, diff_data)
+
+10. Initial tests:
+Aim: Run initial tests to check for the existence of an LRG file for the given gene name.
+It also checks the consistency and readability of the file.
+Function: initial_tests()
 
 11. Run of final tests
 Aim: Checking for the xml file format/version.
@@ -223,6 +223,7 @@ Function: final_tests()
 12. Print disclaimer:
 Aim: Print disclaimer statement at the end of program execution
 Function: disclaimer()
+
 
 Note: Refer to Developers file for further information
 
