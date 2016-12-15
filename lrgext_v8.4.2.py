@@ -257,7 +257,7 @@ def get_diff_data(data, root):
             other_seq_base = diff.get('other_sequence')
 
             # create list of differences between builds data
-            diff_data.append([diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base])
+            diff_data.append([build,diff_type,diff_lrg_start,diff_lrg_end,diff_gen_start,diff_gen_end,lrg_seq_base,other_seq_base])
 
     # Data to be returned in columns in .csv file
     for group in diff_data:
@@ -309,7 +309,7 @@ def diff2file (opath, enter_gene, build_data, diff_data, lrg_id):
 
     # Create headings
     build_headings = ["build", "chr","NC_trans","geno_start_coord", "geno_end_coord","LRG_start", "LRG_end","LRG_size", "Gene_size"]
-    diff_headings = ["Diff_type","LRG_start","LRG_end","Geno_coord_start","Geno_coord_end","LRG_allele","Ref_allele"]
+    diff_headings = ["Build","Diff_type","LRG_start","LRG_end","Geno_coord_start","Geno_coord_end","LRG_allele","Ref_allele"]
 
     # Writing a comma-separated values (.csv)
     db_build.write("\t".join(build_headings) + "\n")
