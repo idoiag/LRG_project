@@ -382,22 +382,20 @@ def final_tests(tot_exons, schema,  str_dir, lrg_size_37, lrg_size_38, gene_len_
 
     # Check the strand direction and warn if in reverse.
     if str_dir == "-":
-        print("\nN.B. This LRG is on the REVERSE strand")
+        print("\nN.B.\t-This LRG is on the REVERSE strand")
     elif str_dir == '+':
-        print("\nN.B. This LRG is on the FORWARD strand")
+        print("\nN.B.\t-This LRG is on the FORWARD strand")
 
     # check the size of the LRG is the same when comparing builds (this should ALWAYS be the same)
-    if lrg_size_38 != lrg_size_37:
-        print("\nWARNING: LRG sizes differ between GRCh37 and GRCh38")
-
-    # check the gene length against LRG size, indicate that there may be sequence differences between reference genome and LRG
     if gene_len_38 != lrg_size_38:
-        print("\nReference sequence GRCh38 is different to LRG size. Please refer to diff.csv in /Outputs folder for more information") 
+        print("\t-GRCh38 reference sequence size differ from LRG size. Please refer to diff.csv in /Outputs folder for more information") 
     else:
-        print("\nReference sequence GRCh38 is equal to LRG size") 
-        
-    assert (tot_exons == count_ex_all), "Problem with exon number"
-        
+        print("\t-GRCh38 reference sequence and LRG have same size") 
+    
+    ### Assert functions used for debugging ###
+    assert (tot_exons == count_ex_all), "Problem with exon number" 
+    assert (lrg_size_38 == lrg_size_37), "Warning: LRG sizes differ between builds"  
+    assert (gene_len_38 == lrg_size_38), "GRCh38 reference sequence size differ from LRG size"
 
     return
 

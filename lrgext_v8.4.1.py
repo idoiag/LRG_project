@@ -44,7 +44,7 @@ def handle_xml(data):
     return(root, up_anno)
 
 
-def get_gen_data(data, root):
+def get_gen_data(data, root, lrg_id):
 
     """
     Extract gene name (HGVS nomenclature) and tag strand as forward(+) or reverse(-)
@@ -53,6 +53,7 @@ def get_gen_data(data, root):
     # Extract name of gene
     gene = root.find('updatable_annotation/annotation_set/lrg_locus').text
     #print('\nGene: ', gene)
+    print ("\nLRG ID: ", lrg_id, ' Gene: ', gene)
 
     # Determine the strand direction of gene, forward strand or reverse strand
     for annotation in root.findall('./updatable_annotation/annotation_set[@type="lrg"]/mapping[@type="main_assembly"]/mapping_span'):
@@ -94,7 +95,7 @@ def get_background(root):
                 strand_cs = coordinates.get('strand')
 
         print ("\nSchema version: " + schema)
-        print ("\nLRG ID: ", lrg_id, ' Gene: ', gene)
+        #print ("\nLRG ID: ", lrg_id, ' Gene: ', gene)
         return (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs)
 
 
@@ -410,8 +411,8 @@ def disclaimer():
 
 def main():
     script = sys.argv[0]
-    enter_gene = sys.argv[1].upper()
-    #enter_gene = "APC" # For testing purposes
+    #enter_gene = sys.argv[1].upper()
+    enter_gene = "APC" # For testing purposes
     
     path = './LRGs/'
     opath = './Outputs/'
@@ -422,7 +423,7 @@ def main():
     (root, up_anno) = handle_xml(data)
     
     (schema, lrg_id, hgnc_id, seq_source, transcript, cs, start_cs, end_cs, strand_cs) = get_background(root)
-    (gene, str_dir) = get_gen_data(data, root)
+    (gene, str_dir) = get_gen_data(data, root, lrg_id)
     
     (build_data, build, chro, NC_trans, gstart, gend, lrg_start, lrg_end, lrg_size_37, lrg_size_38, lrg_size, gene_len_37, gene_len_38, gene_len) = get_build_info(up_anno)
     (diff_data) = get_diff_data(data, root)
